@@ -1,29 +1,50 @@
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { ThemeProvider } from "@rneui/themed";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
 import React from "react";
-import { Button } from "@rneui/themed";
+import "react-native-gesture-handler";
+import { Provider } from "react-redux";
+import { THEME } from "./src/constants/theme";
+import { InitAppProvider } from "./src/hook/useInitApp";
+import AppNavigator from "./src/navigators/AppNavigator";
+import AuthNavigator from "./src/navigators/AuthNavigator";
+import Splash from "./src/screens/Splash";
+import { store } from "./src/states";
+import { RootNavigationParamList } from "./src/types/navigation";
 
-export default function App() {
+const Stack = createStackNavigator<RootNavigationParamList>();
+const queryClient = new QueryClient();
+
+export default function Root() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <Button
-        onPress={() => {
-          alert("Button Pressed");
-        }}
-      >
-        Button
-      </Button>
-      <StatusBar style="auto" />
-    </View>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider theme={THEME}>
+        <NavigationContainer>
+          <InitAppProvider>
+            <Provider store={store}>
+              <StatusBar style="light" />
+              <Stack.Navigator
+                screenOptions={{ headerShown: false, animationEnabled: true }}
+              >
+                <Stack.Screen
+                  name="Splash"
+                  component={Splash}
+                />
+                <Stack.Screen
+                  name="App"
+                  component={AppNavigator}
+                />
+                <Stack.Screen
+                  name="Auth"
+                  component={AuthNavigator}
+                />
+              </Stack.Navigator>
+            </Provider>
+          </InitAppProvider>
+        </NavigationContainer>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
