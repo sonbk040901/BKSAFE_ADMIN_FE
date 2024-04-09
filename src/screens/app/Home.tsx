@@ -1,98 +1,102 @@
-import { Button, Text } from "@rneui/themed";
-import React, { FC, useEffect } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
-import { RefreshControl } from "react-native-gesture-handler";
-import { useRecentsBooking } from "../../api/hook";
+import { Switch, Text } from "@rneui/themed";
+import React, { FC, useEffect, useState } from "react";
+import { StyleSheet, View } from "react-native";
+import MapView, { Marker } from "react-native-maps";
+import { driverApi } from "../../api";
 import AppWrapper from "../../components/AppWrapper";
 import Card from "../../components/Card";
-import TravelCard from "../../components/home/TravelCard";
-import { COLOR } from "../../constants/color";
+import { useInitAppContext } from "../../hook/useInitApp";
+import useLocation from "../../hook/useLocation";
+import { driverSocket } from "../../socket";
 import type { AppNavigationProp } from "../../types/navigation";
-import { bookingSocket } from "../../socket";
-import { useAppDispatch } from "../../states";
-import { patchBooking } from "../../states/slice/booking";
-import { Booking } from "../../api";
 interface HomeProps {
   navigation: AppNavigationProp;
 }
-const Home: FC<HomeProps> = ({ navigation }) => {
-  const { data, refetch, status } = useRecentsBooking();
-  const dispatch = useAppDispatch();
-  useEffect(() => {
-    const unsubscribe = navigation.addListener("focus", refetch);
-    return unsubscribe;
-  }, [navigation, refetch]);
-  useEffect(() => {
-    if (status !== "success") return;
-    const unsubscribe = bookingSocket.listenCurrentBooking(refetch);
-    return unsubscribe;
-  }, [refetch, status]);
-  const handleSelectBooking = (data?: Nullable<Booking>) => () => {
-    const booking = data ?? undefined;
-    dispatch(patchBooking(booking));
-    navigation.push("Map");
+const Home: FC<HomeProps> = ({}) => {
+  const { data } = useInitAppContext();
+  const [checked, setChecked] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [receiveBooking, setReceiveBooking] = useState(false);
+  const { location, startLocation, stopLocation, setLocation } = useLocation();
+  const handleToggleLocation = () => {
+    if (checked) {
+      stopLocation();
+      setChecked(false);
+      return;
+    }
+    startLocation();
+    setChecked(true);
   };
+  const handleToggleReceiveBooking = () => {
+    setReceiveBooking((prev) => !prev);
+  };
+  useEffect(() => {
+    if (!location) return;
+    driverSocket.emitUpdateLocation(location);
+  }, [location]);
+  useEffect(() => {
+    driverApi.updateStatus(receiveBooking ? "AVAILABLE" : "OFFLINE");
+  }, [receiveBooking]);
   return (
     <AppWrapper>
       <View style={styles.container}>
         <Card style={styles.card}>
-          <Text style={styles.cardTitle}>Xin chào, Lê Đức Sơn!</Text>
+          <Text style={styles.cardTitle}>Xin chào, {data?.fullName}!</Text>
           <View style={styles.cardContent}>
-            <Text style={styles.text}>Bạn muốn có một chuyến đi an toàn?</Text>
-            <Text style={styles.text}>Hãy sử dụng BKSafe!</Text>
+            <Text style={styles.text}>Bạn muốn kiếm thêm thu nhập?</Text>
+            <Text style={styles.text}>Hãy sử dụng BKSafe dành cho tài xế!</Text>
           </View>
-          <Text style={styles.cardAction}>
-            <Button
-              title={
-                data?.current
-                  ? "Xem chuyến đi hiện tại"
-                  : "Thuê tài xế ngay bây giờ"
-              }
-              radius="md"
-              buttonStyle={{ backgroundColor: COLOR.primary }}
-              onPress={handleSelectBooking(data?.current)}
-              icon={{
-                name: "chevron-right",
-                size: 20,
-                color: "white",
-                type: "feather",
-              }}
-              iconRight
-            />
-          </Text>
         </Card>
-        <ScrollView
-          style={{
-            flex: 1,
-            width: "100%",
-          }}
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl
-              refreshing={status === "loading"}
-              onRefresh={refetch}
+        <Card style={{ marginTop: 15 }}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Text>{receiveBooking ? "Tắt" : "Bật"} nhận đặt tài xế</Text>
+            <Switch
+              value={receiveBooking}
+              onValueChange={handleToggleReceiveBooking}
             />
-          }
-        >
-          {data && (
-            <View
-              style={{ alignItems: "center", gap: 20, paddingVertical: 20 }}
-            >
-              <TravelCard
-                title="Chuyến đi hiện tại"
-                data={data.current}
-                onPress={handleSelectBooking(data.current)}
-              />
-              {data.recent && (
-                <TravelCard
-                  title="Chuyến đi trước"
-                  data={data.recent}
-                  onPress={handleSelectBooking(data.recent)}
-                />
-              )}
-            </View>
-          )}
-        </ScrollView>
+          </View>
+          <View>
+            
+          </View>
+        </Card>
+        <Card style={{ marginTop: 15 }}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Text>{checked ? "Tắt" : "Bật"} chia sẻ vị trí</Text>
+            <Switch
+              value={checked}
+              onValueChange={handleToggleLocation}
+            />
+          </View>
+          <MapView
+            style={{ height: 200 }}
+            camera={{
+              center: {
+                latitude: 21.007326,
+                longitude: 105.847328,
+              },
+              pitch: 0,
+              heading: 0,
+              altitude: 0,
+              zoom: 15,
+            }}
+          >
+            <Marker
+              draggable={!checked}
+              onDragEnd={(e) => {
+                setLocation({
+                  latitude: e.nativeEvent.coordinate.latitude,
+                  longitude: e.nativeEvent.coordinate.longitude,
+                });
+              }}
+              coordinate={{
+                latitude: location?.latitude ?? 21.007326,
+                longitude: location?.longitude ?? 105.847328,
+              }}
+              title="Vị trí của bạn"
+              description="Đây là vị trí hiện tại của bạn"
+            />
+          </MapView>
+        </Card>
       </View>
     </AppWrapper>
   );

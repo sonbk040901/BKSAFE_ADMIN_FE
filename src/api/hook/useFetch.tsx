@@ -12,25 +12,39 @@ type UseFetchOptions<D, RD> = {
   autoFetch?: boolean;
 };
 type UseFetchReturn<D, RD> = {
+  /**
+   * true nếu đang fetch dữ liệu (cả lần đầu và refetch)
+   */
   isLoading: boolean;
+  /**
+   * true nếu đang fetch dữ liệu lần đầu
+   */
+  isFetching: boolean;
   data: RD extends undefined ? D | null : D;
   status: FetchStatus;
   error: ErrorResponse | null;
-  refetch: () => void;
+  refetch: (isFirstTime?: boolean) => void;
 };
 const reducer = (
   state: object,
-  action: { type: FetchStatus; data?: unknown; error?: unknown },
+  action: { type: FetchStatus | "fetching"; data?: unknown; error?: unknown },
 ) => {
   switch (action.type) {
+    case "fetching":
+      return { ...state, status: "loading", isFetching: true, isLoading: true };
     case "loading":
-      return { ...state, status: "loading", isLoading: true };
+      return {
+        ...state,
+        status: "loading",
+        isLoading: true,
+      };
     case "success":
       return {
         ...state,
         status: "success",
         data: action.data,
         isLoading: false,
+        isFetching: false,
       };
     case "error":
       return {
@@ -38,6 +52,7 @@ const reducer = (
         status: "error",
         error: action.error,
         isLoading: false,
+        isFetching: false,
       };
     default:
       return state;
@@ -53,10 +68,13 @@ function useFetch<D, RD extends D | undefined>(
     status: "idle",
     data: initialData || null,
     error: null,
+    isLoading: true,
+    isFetching: true,
   });
   const refetch = useCallback(
     (isFirstTime = false) => {
-      if (isFirstTime) dispatch({ type: "loading" });
+      if (isFirstTime) dispatch({ type: "fetching" });
+      else dispatch({ type: "loading" });
       fetchFn()
         .then((data) => dispatch({ type: "success", data }))
         .catch((error) => {

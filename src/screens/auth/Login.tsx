@@ -17,6 +17,7 @@ import { useInitAppContext } from "../../hook/useInitApp";
 const Login = () => {
   const navigation = useNavigation<AuthNavigationProp>();
   const emailRef = useRef<PropsWithChildren<TextInput>>(null);
+  const passwordRef = useRef<PropsWithChildren<TextInput>>(null);
   const { setEmail, setPassword, submit, status } = useLogin();
   const { data, refetch, isAuthenticated } = useInitAppContext();
   useEffect(() => {
@@ -35,6 +36,12 @@ const Login = () => {
       clearTimeout(sto);
     };
   }, []);
+  const handleEmailSubmit = () => {
+    passwordRef.current?.focus();
+  };
+  const handleSubmit = () => {
+    submit();
+  };
   return (
     <AuthWrapper>
       <View style={styles.container}>
@@ -51,12 +58,18 @@ const Login = () => {
         <Input
           ref={emailRef}
           onChangeText={setEmail}
+          onBlur={(e) => {
+            e.preventDefault();
+          }}
+          onSubmitEditing={handleEmailSubmit}
           placeholder="Email"
         />
         <Input
+          ref={passwordRef}
           placeholder="Mật khẩu"
-          onChangeText={setPassword}
           secureTextEntry
+          onChangeText={setPassword}
+          onSubmitEditing={handleSubmit}
         />
         <Button
           titleStyle={{
@@ -66,7 +79,7 @@ const Login = () => {
           }}
           size="lg"
           disabled={status === "pending"}
-          onPress={() => submit()}
+          onPress={handleSubmit}
         >
           Đăng nhập
         </Button>

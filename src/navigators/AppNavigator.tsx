@@ -15,7 +15,7 @@ const AppNavigator = () => {
       drawerContent={(props: any) => <CustomDrawer {...props} />}
       screenOptions={{
         swipeEnabled: true,
-        swipeEdgeWidth: 50,
+        swipeEdgeWidth: 90,
         header: (props) => <AppHeader {...props} />,
       }}
     >

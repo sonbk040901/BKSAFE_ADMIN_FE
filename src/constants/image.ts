@@ -1,1 +1,3 @@
-export const IMAGE = {} as const;
+export const IMAGE = {
+  logo: require("../assets/logo.png"),
+} as const;

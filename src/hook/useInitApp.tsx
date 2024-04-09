@@ -3,9 +3,9 @@ import {
   requestForegroundPermissionsAsync,
 } from "expo-location";
 import React, { createContext, useEffect, useState } from "react";
-import useProfile from "../api/hook/useProfile";
 import { Account, ErrorResponse } from "../api";
-// import { bookingSocket } from "../socket";
+import useProfile from "../api/hook/useProfile";
+import { driverSocket } from "../socket";
 type AuthStatus = "undetermined" | "authenticated" | "unauthenticated";
 
 export default function useInitApp() {
@@ -32,14 +32,14 @@ export default function useInitApp() {
     };
     init();
   }, []);
-  // useEffect(() => {
-  //   if (authStatus === "authenticated") {
-  //     bookingSocket.connect();
-  //   }
-  //   if (authStatus === "unauthenticated") {
-  //     bookingSocket.disconnect();
-  //   }
-  // }, [authStatus]);
+  useEffect(() => {
+    if (authStatus === "authenticated") {
+      driverSocket.connect();
+    }
+    if (authStatus === "unauthenticated") {
+      driverSocket.disconnect();
+    }
+  }, [authStatus]);
   return { isLoading, isAuthenticated, data, refetch, error };
 }
 

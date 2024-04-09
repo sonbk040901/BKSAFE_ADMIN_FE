@@ -17,7 +17,7 @@ const AppHeader: FC<DrawerHeaderProps> = ({ navigation, route }) => {
           fontWeight: "bold",
         }}
       >
-        {route.name === "Home" ? "BKSafe" : route.name}
+        {route.name === "Home" ? "BKSafe Driver" : route.name}
       </Text>
       <View
         style={{

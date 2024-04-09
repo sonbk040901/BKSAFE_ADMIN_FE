@@ -5,8 +5,9 @@ import { StyleSheet, Text, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { COLOR } from "../constants/color";
 import CustomDrawerItem from "./CustomDrawerItem";
-import { logout } from "../api_v1";
+import { authApi } from "../api";
 import { AppNavigationProp } from "../types/navigation";
+import { useInitAppContext } from "../hook/useInitApp";
 const drawerItems: {
   name: string;
   icon: string;
@@ -19,8 +20,9 @@ const drawerItems: {
 ];
 type Props = DrawerContentComponentProps & { navigation: AppNavigationProp };
 const CustomDrawer = ({ navigation, state }: Props) => {
+  const { data } = useInitAppContext();
   const handleLogout = () => {
-    logout();
+    authApi.logout();
     navigation.replace("Auth");
   };
   return (
@@ -47,8 +49,8 @@ const CustomDrawer = ({ navigation, state }: Props) => {
             containerStyle={styles.avatar}
           />
           <View style={styles.info}>
-            <Text style={styles.fullName}>Lê Đức Sơn</Text>
-            <Text style={styles.email}>leducson007@gmail.com</Text>
+            <Text style={styles.fullName}>{data?.fullName}</Text>
+            <Text style={styles.email}>{data?.email}</Text>
           </View>
         </View>
       </View>

@@ -6,21 +6,17 @@ import { showAlert, showNativeAlert } from "../../utils/alert";
 function useLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { mutate, status, error } = useMutation({
+  const { mutate, status } = useMutation({
     mutationFn: login,
   });
   useEffect(() => {
     if (status === "success") {
-      // setEmail("");
-      // setPassword("");
       showNativeAlert("Đăng nhập thành công");
       return;
     }
-    if (error) {
+    if (status === "error") {
       showAlert("Đăng nhập thất bại", "Email hoặc mật khẩu không đúng");
-      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
   const submit = () => {
     mutate({ email, password });
