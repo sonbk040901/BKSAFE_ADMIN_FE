@@ -13,6 +13,7 @@ import AuthNavigator from "./src/navigators/AuthNavigator";
 import Splash from "./src/screens/Splash";
 import { store } from "./src/states";
 import { RootNavigationParamList } from "./src/types/navigation";
+import BookingReceive from "./src/screens/BookingReceive";
 
 const Stack = createStackNavigator<RootNavigationParamList>();
 const queryClient = new QueryClient();
@@ -39,6 +40,13 @@ export default function Root() {
                 <Stack.Screen
                   name="Auth"
                   component={AuthNavigator}
+                />
+                <Stack.Screen
+                  name="BookingReceive"
+                  component={BookingReceive}
+                  options={{
+                    // presentation: "transparentModal",
+                  }}
                 />
               </Stack.Navigator>
             </Provider>

@@ -5,7 +5,7 @@ import {
 import React, { createContext, useEffect, useState } from "react";
 import { Account, ErrorResponse } from "../api";
 import useProfile from "../api/hook/useProfile";
-import { driverSocket } from "../socket";
+import { bookingSocket, driverSocket } from "../socket";
 type AuthStatus = "undetermined" | "authenticated" | "unauthenticated";
 
 export default function useInitApp() {
@@ -13,8 +13,9 @@ export default function useInitApp() {
   const [permissionStatus, setPermissionStatus] = useState<PermissionStatus>(
     PermissionStatus.UNDETERMINED,
   );
+  const [socketReady, setSocketReady] = useState(false);
   const authStatus: AuthStatus =
-    status === "loading"
+    status === "idle" || status === "loading" || socketReady === false
       ? "undetermined"
       : status === "success"
       ? "authenticated"
@@ -33,13 +34,21 @@ export default function useInitApp() {
     init();
   }, []);
   useEffect(() => {
-    if (authStatus === "authenticated") {
-      driverSocket.connect();
+    const connectSocket = async () => {
+      await driverSocket.connect();
+      await bookingSocket.connect();
+      setSocketReady(true);
+      return;
+    };
+    if (status === "success") {
+      connectSocket();
+      return () => {
+        driverSocket.disconnect();
+        bookingSocket.disconnect();
+        setSocketReady(false);
+      };
     }
-    if (authStatus === "unauthenticated") {
-      driverSocket.disconnect();
-    }
-  }, [authStatus]);
+  }, [status]);
   return { isLoading, isAuthenticated, data, refetch, error };
 }
 

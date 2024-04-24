@@ -1,4 +1,4 @@
-import { Switch, Text } from "@rneui/themed";
+import { Button, Switch, Text } from "@rneui/themed";
 import React, { FC, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
@@ -7,15 +7,15 @@ import AppWrapper from "../../components/AppWrapper";
 import Card from "../../components/Card";
 import { useInitAppContext } from "../../hook/useInitApp";
 import useLocation from "../../hook/useLocation";
-import { driverSocket } from "../../socket";
+import { bookingSocket, driverSocket } from "../../socket";
 import type { AppNavigationProp } from "../../types/navigation";
 interface HomeProps {
   navigation: AppNavigationProp;
 }
-const Home: FC<HomeProps> = ({}) => {
+const Home: FC<HomeProps> = ({ navigation }) => {
   const { data } = useInitAppContext();
   const [checked, setChecked] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
+  // const [isVisible, setIsVisible] = useState(false);
   const [receiveBooking, setReceiveBooking] = useState(false);
   const { location, startLocation, stopLocation, setLocation } = useLocation();
   const handleToggleLocation = () => {
@@ -37,6 +37,12 @@ const Home: FC<HomeProps> = ({}) => {
   useEffect(() => {
     driverApi.updateStatus(receiveBooking ? "AVAILABLE" : "OFFLINE");
   }, [receiveBooking]);
+  useEffect(() => {
+    const unSubcriber = bookingSocket.listenSuggestBooking((bookingId) => {
+      navigation.push("BookingReceive", { bookingId });
+    });
+    return unSubcriber;
+  }, [navigation]);
   return (
     <AppWrapper>
       <View style={styles.container}>
@@ -56,7 +62,13 @@ const Home: FC<HomeProps> = ({}) => {
             />
           </View>
           <View>
-            
+            <Button
+              onPress={() => {
+                navigation.push("BookingReceive", { bookingId: 34 });
+              }}
+            >
+              Switch
+            </Button>
           </View>
         </Card>
         <Card style={{ marginTop: 15 }}>

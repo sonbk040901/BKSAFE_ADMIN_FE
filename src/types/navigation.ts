@@ -9,6 +9,9 @@ export type RootNavigationParamList = {
   };
   Map: undefined;
   Auth: undefined;
+  BookingReceive: {
+    bookingId: number;
+  };
 };
 export type RootNavigationProp = StackNavigationProp<RootNavigationParamList>;
 export type AppNavigationParamList = {
@@ -26,3 +29,7 @@ export type AuthNavigationParamList = {
 export type AuthNavigationProp = StackNavigationProp<AuthNavigationParamList> &
   StackNavigationProp<RootNavigationParamList>;
 export type MapRouteProp = RouteProp<RootNavigationParamList, "Map">;
+export type BookingReceiveRouteProp = RouteProp<
+  RootNavigationParamList,
+  "BookingReceive"
+>;

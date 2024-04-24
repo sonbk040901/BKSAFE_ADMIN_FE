@@ -15,3 +15,11 @@ export const disconnect = () => {
   socket.disconnect();
   console.log(`Disconnected from booking socket`);
 };
+export const listenSuggestBooking = (cb: (bookingId: number) => void) => {
+  socket.on("suggest", cb);
+  console.log("Listening to suggest booking");
+  return () => {
+    socket.off("suggest", cb);
+    console.log("Stopped listening to suggest booking");
+  };
+};
