@@ -1,6 +1,13 @@
 import { Button, Divider, Icon } from "@rneui/themed";
+import { LinearGradient } from "expo-linear-gradient";
 import React, { FC, useEffect, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { ggMapApi } from "../api";
 import { AutoCompleteResultType } from "../api/ggmap";
 import { useBookingReceive } from "../api/hook";
@@ -23,6 +30,8 @@ const BookingReceive: FC<BookingReceiveProps> = (props) => {
   const { booking } = useBookingReceive({
     bookingId: route.params.bookingId,
   });
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [countdown, setCountdown] = useState(20);
   const [locations, setLocations] =
     useState<AutoCompleteResultType["predictions"]>();
   const handleBack = () => {
@@ -37,19 +46,37 @@ const BookingReceive: FC<BookingReceiveProps> = (props) => {
         return result.predictions[0];
       }),
     ).then(setLocations);
-    // ggMapApi.autoComplete();
   }, [booking]);
+  useEffect(() => {
+    // const interval = setInterval(() => {
+    //   setCountdown((prev) => {
+    //     if (prev === 0) {
+    //       clearInterval(interval);
+    //       navigation.pop();
+    //       return 0;
+    //     }
+    //     return prev - 1;
+    //   });
+    // }, 1000);
+    // return () => {
+    //   clearInterval(interval);
+    // };
+  }, [navigation]);
   if (!booking) return null;
 
   return (
-    <View style={styles.container}>
+    <LinearGradient
+      colors={[COLOR.primary, "#ffffff", "#ffffff", "#429aff"]}
+      start={{ x: 0.3, y: 0 }}
+      style={styles.container}
+    >
       <View style={styles.top}>
         <View style={styles.header}>
           <TouchableOpacity onPress={handleBack}>
             <Icon
               name="cancel"
               size={30}
-              color={COLOR.secondary}
+              color={COLOR.white}
               selectable
             />
           </TouchableOpacity>
@@ -74,15 +101,44 @@ const BookingReceive: FC<BookingReceiveProps> = (props) => {
           </View>
         </View>
       </View>
-      <View style={styles.bottom}>
+      <View style={[styles.bottom]}>
         <View style={styles.locationList}>
-          <Text style={styles.distance}>Cách bạn 0.03 km</Text>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "baseline",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text style={styles.distance}>Cách bạn 0.03 km</Text>
+            {/* <Text
+              style={{
+                fontWeight: "500",
+                fontSize: 18,
+                color: COLOR.primary,
+                textDecorationLine: "underline",
+              }}
+            >
+              Xem trên bản đồ
+            </Text> */}
+            <Button
+              type="clear"
+              // iconRight
+            >
+              Xem trên bản đồ {''}
+              <Icon
+                name="map"
+                size={20}
+                color={COLOR.primary}
+              />
+            </Button>
+          </View>
           <View
             style={{
               paddingTop: 20,
             }}
           >
-            {locations &&
+            {locations ? (
               Array(locations.length * 2 - 1)
                 .fill(0)
                 .map((_, i) => {
@@ -103,7 +159,13 @@ const BookingReceive: FC<BookingReceiveProps> = (props) => {
                       />
                     );
                   return <CustomDivider key={i} />;
-                })}
+                })
+            ) : (
+              <ActivityIndicator
+                color={COLOR.primary}
+                size="large"
+              />
+            )}
           </View>
         </View>
         <Button
@@ -112,11 +174,25 @@ const BookingReceive: FC<BookingReceiveProps> = (props) => {
         >
           Chấp nhận
           <View style={styles.countdown}>
-            <Text style={styles.countdownText}>10</Text>
+            <Text
+              style={[
+                styles.countdownText,
+                {
+                  color:
+                    countdown < 10
+                      ? countdown < 6
+                        ? "#ff6060"
+                        : "#ffb060"
+                      : "white",
+                },
+              ]}
+            >
+              {countdown}
+            </Text>
           </View>
         </Button>
       </View>
-    </View>
+    </LinearGradient>
   );
 };
 
@@ -124,7 +200,7 @@ export default BookingReceive;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: COLOR.primaryBackground,
+    backgroundColor: COLOR.primary,
     flex: 1,
   },
   top: {
@@ -139,10 +215,12 @@ const styles = StyleSheet.create({
     padding: 25,
   },
   currency: {
+    color: COLOR.dark,
     fontSize: 20,
     fontWeight: "500",
   },
   price: {
+    color: COLOR.dark,
     fontSize: 60,
     fontWeight: "500",
   },
@@ -170,7 +248,7 @@ const styles = StyleSheet.create({
   countdown: {
     position: "absolute",
     right: 30,
-    backgroundColor: COLOR.secondaryBackground,
+    backgroundColor: "#bdbdbd3f",
     width: 30,
     height: 30,
     justifyContent: "center",
@@ -180,6 +258,7 @@ const styles = StyleSheet.create({
   countdownText: {
     color: "white",
     fontSize: 16,
+    fontWeight: "500",
   },
   item: {
     flexDirection: "row",
@@ -274,6 +353,6 @@ const sr = StyleSheet.create({
     marginTop: 17,
     gap: 3,
   },
-  itemTitle: { fontSize: 18 },
+  itemTitle: { fontSize: 18, fontWeight: "500" },
   itemDescription: { color: "gray" },
 });
