@@ -15,7 +15,6 @@ interface HomeProps {
 const Home: FC<HomeProps> = ({ navigation }) => {
   const { data } = useInitAppContext();
   const [checked, setChecked] = useState(false);
-  // const [isVisible, setIsVisible] = useState(false);
   const [receiveBooking, setReceiveBooking] = useState(false);
   const { location, startLocation, stopLocation, setLocation } = useLocation();
   const handleToggleLocation = () => {
@@ -61,13 +60,20 @@ const Home: FC<HomeProps> = ({ navigation }) => {
               onValueChange={handleToggleReceiveBooking}
             />
           </View>
-          <View>
+          <View style={{ gap: 20 }}>
             <Button
               onPress={() => {
                 navigation.push("BookingReceive", { bookingId: 34 });
               }}
             >
               Switch
+            </Button>
+            <Button
+              onPress={() => {
+                navigation.push("CurrentBooking", { bookingId: 34 });
+              }}
+            >
+              Switch 2
             </Button>
           </View>
         </Card>

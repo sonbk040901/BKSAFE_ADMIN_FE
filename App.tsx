@@ -10,10 +10,11 @@ import { THEME } from "./src/constants/theme";
 import { InitAppProvider } from "./src/hook/useInitApp";
 import AppNavigator from "./src/navigators/AppNavigator";
 import AuthNavigator from "./src/navigators/AuthNavigator";
+import BookingReceive from "./src/screens/BookingReceive";
+import CurrentBooking from "./src/screens/CurrentBooking";
 import Splash from "./src/screens/Splash";
 import { store } from "./src/states";
 import { RootNavigationParamList } from "./src/types/navigation";
-import BookingReceive from "./src/screens/BookingReceive";
 
 const Stack = createStackNavigator<RootNavigationParamList>();
 const queryClient = new QueryClient();
@@ -44,9 +45,10 @@ export default function Root() {
                 <Stack.Screen
                   name="BookingReceive"
                   component={BookingReceive}
-                  options={{
-                    // presentation: "transparentModal",
-                  }}
+                />
+                <Stack.Screen
+                  name="CurrentBooking"
+                  component={CurrentBooking}
                 />
               </Stack.Navigator>
             </Provider>

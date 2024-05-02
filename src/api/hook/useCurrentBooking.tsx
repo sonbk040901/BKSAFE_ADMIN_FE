@@ -1,11 +1,11 @@
 import { bookingApi } from "../";
 import useFetch from "./useFetch";
 
-function useBookingReceive() {
+function useCurrentBooking() {
   const { data: booking, ...rest } = useFetch({
-    fetchFn: () => bookingApi.getReceiveBooking(),
+    fetchFn: () => bookingApi.getCurrentBooking(),
   });
   return { booking, ...rest };
 }
 
-export default useBookingReceive;
+export default useCurrentBooking;

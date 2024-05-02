@@ -20,10 +20,10 @@ const drawerItems: {
 ];
 type Props = DrawerContentComponentProps & { navigation: AppNavigationProp };
 const CustomDrawer = ({ navigation, state }: Props) => {
-  const { data } = useInitAppContext();
-  const handleLogout = () => {
-    authApi.logout();
-    navigation.replace("Auth");
+  const { data, refetch } = useInitAppContext();
+  const handleLogout = async () => {
+    await authApi.logout();
+    refetch();
   };
   return (
     <View style={styles.container}>

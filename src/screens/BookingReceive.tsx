@@ -1,8 +1,9 @@
 import { Button, Divider, Icon } from "@rneui/themed";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -11,32 +12,39 @@ import {
 import { ggMapApi } from "../api";
 import { AutoCompleteResultType } from "../api/ggmap";
 import { useBookingReceive } from "../api/hook";
+import useBookingAction from "../api/hook/useBookingAction";
 import Badge from "../components/common/Badge";
 import { COLOR, STYLE } from "../constants";
-import {
-  AppNavigationProp,
-  BookingReceiveRouteProp,
-} from "../types/navigation";
+import { AppNavigationProp } from "../types/navigation";
 interface BookingReceiveProps {
   navigation: AppNavigationProp;
-  route: BookingReceiveRouteProp;
 }
 const toKVND = (price: number) => {
   return parseInt((price / 1000).toFixed(0)).toLocaleString("vi-VN");
 };
 
 const BookingReceive: FC<BookingReceiveProps> = (props) => {
-  const { navigation, route } = props;
-  const { booking } = useBookingReceive({
-    bookingId: route.params.bookingId,
-  });
+  const { navigation } = props;
+  const { booking } = useBookingReceive();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [countdown, setCountdown] = useState(20);
   const [locations, setLocations] =
     useState<AutoCompleteResultType["predictions"]>();
-  const handleBack = () => {
-    navigation.pop();
-  };
+  const { mutateAsync: bookingAction } = useBookingAction({});
+  const handleBack = useCallback(() => {
+    if (!booking) return;
+    bookingAction({
+      action: "reject",
+      id: booking.id,
+    }).finally(() => navigation.pop());
+  }, [booking, bookingAction, navigation]);
+  const handleAccept = useCallback(() => {
+    if (booking)
+      bookingAction({
+        action: "accept",
+        id: booking.id,
+      }).finally(() => navigation.replace("CurrentBooking"));
+  }, [booking, bookingAction, navigation]);
   useEffect(() => {
     if (!booking) return;
     const locations = booking.locations;
@@ -48,21 +56,35 @@ const BookingReceive: FC<BookingReceiveProps> = (props) => {
     ).then(setLocations);
   }, [booking]);
   useEffect(() => {
-    // const interval = setInterval(() => {
-    //   setCountdown((prev) => {
-    //     if (prev === 0) {
-    //       clearInterval(interval);
-    //       navigation.pop();
-    //       return 0;
-    //     }
-    //     return prev - 1;
-    //   });
-    // }, 1000);
-    // return () => {
-    //   clearInterval(interval);
-    // };
-  }, [navigation]);
-  if (!booking) return null;
+    const interval = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev === 0) {
+          clearInterval(interval);
+          handleBack();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [handleBack]);
+  if (!booking)
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: "white",
+          justifyContent: "center",
+        }}
+      >
+        <ActivityIndicator
+          color={COLOR.primary}
+          size="large"
+        />
+      </View>
+    );
 
   return (
     <LinearGradient
@@ -101,7 +123,18 @@ const BookingReceive: FC<BookingReceiveProps> = (props) => {
           </View>
         </View>
       </View>
-      <View style={[styles.bottom]}>
+      <LinearGradient
+        colors={[
+          "#95c6ff1a",
+          "#ffffff",
+          "#95c6ff1a",
+          "#ffffff",
+          "#95c6ff1a",
+          "#ffffff",
+        ]}
+        start={{ x: 0, y: 0 }}
+        style={[styles.bottom]}
+      >
         <View style={styles.locationList}>
           <View
             style={{
@@ -111,21 +144,8 @@ const BookingReceive: FC<BookingReceiveProps> = (props) => {
             }}
           >
             <Text style={styles.distance}>Cách bạn 0.03 km</Text>
-            {/* <Text
-              style={{
-                fontWeight: "500",
-                fontSize: 18,
-                color: COLOR.primary,
-                textDecorationLine: "underline",
-              }}
-            >
-              Xem trên bản đồ
-            </Text> */}
-            <Button
-              type="clear"
-              // iconRight
-            >
-              Xem trên bản đồ {''}
+            <Button type="clear">
+              Xem trên bản đồ {""}
               <Icon
                 name="map"
                 size={20}
@@ -133,44 +153,45 @@ const BookingReceive: FC<BookingReceiveProps> = (props) => {
               />
             </Button>
           </View>
-          <View
+          <ScrollView
             style={{
               paddingTop: 20,
+              height: 200,
+              overflow: "hidden",
             }}
           >
             {locations ? (
-              Array(locations.length * 2 - 1)
-                .fill(0)
-                .map((_, i) => {
-                  if (i === 0)
-                    return (
-                      <Position
-                        key={i}
-                        data={locations[0]}
-                        icon={<Circle />}
-                      />
-                    );
-                  if (i % 2 === 0)
-                    return (
-                      <Position
-                        key={i}
-                        data={locations[i / 2]}
-                        icon={<Triangle />}
-                      />
-                    );
-                  return <CustomDivider key={i} />;
-                })
+              locations.map((location, i) => {
+                if (i === 0)
+                  return (
+                    <Position
+                      key={i}
+                      data={location}
+                      icon={<Circle />}
+                    />
+                  );
+                return (
+                  <Position
+                    key={i}
+                    data={location}
+                    isLast={i === locations.length - 1}
+                    icon={<Triangle />}
+                  />
+                );
+                // return <CustomDivider key={i} />;
+              })
             ) : (
               <ActivityIndicator
                 color={COLOR.primary}
                 size="large"
               />
             )}
-          </View>
+          </ScrollView>
         </View>
         <Button
           containerStyle={styles.confirmBtn}
           size="lg"
+          onPress={handleAccept}
         >
           Chấp nhận
           <View style={styles.countdown}>
@@ -191,7 +212,7 @@ const BookingReceive: FC<BookingReceiveProps> = (props) => {
             </Text>
           </View>
         </Button>
-      </View>
+      </LinearGradient>
     </LinearGradient>
   );
 };
@@ -269,9 +290,11 @@ const styles = StyleSheet.create({
 const Position = ({
   data,
   icon,
+  isLast,
 }: {
   data: AutoCompleteResultType["predictions"][number];
   icon: React.ReactNode;
+  isLast?: boolean;
 }) => {
   return (
     <View style={[]}>
@@ -279,21 +302,34 @@ const Position = ({
         {icon}
         <Text style={sr.itemTitle}>{data.structured_formatting.main_text}</Text>
       </View>
-      <Text style={[sr.itemDescription, { paddingLeft: 25 }]}>
-        {data.description}
-      </Text>
-    </View>
-  );
-};
-const CustomDivider = () => {
-  return (
-    <View style={styles.item}>
-      <View style={{ width: 13, alignItems: "center" }}>
-        <Line />
+      <View
+        style={[
+          styles.item,
+          {
+            alignItems: "stretch",
+            maxHeight: 60,
+            borderLeftWidth: 1.5,
+            borderLeftColor: isLast ? "transparent" : COLOR.primary,
+            marginLeft: 6,
+            paddingLeft: 16,
+          },
+        ]}
+      >
+        <View style={{ flex: 1, gap: 10, paddingBottom: 10 }}>
+          <Text
+            numberOfLines={2}
+            style={[sr.itemDescription]}
+          >
+            {data.description}
+          </Text>
+          {!isLast && <Divider />}
+        </View>
       </View>
-      <View style={{ flex: 1 }}>
-        <Divider />
-      </View>
+      {/* <View style={{ display: "flex", flexDirection: "row" }}>
+        <Text style={[sr.itemDescription, { paddingLeft: 25 }]}>
+          {data.description}
+        </Text>
+      </View> */}
     </View>
   );
 };
@@ -307,18 +343,6 @@ const Circle = () => {
         backgroundColor: COLOR.primary,
       }}
     ></View>
-  );
-};
-const Line = () => {
-  return (
-    <View
-      style={{
-        height: 30,
-        // width: 1.5,
-        borderRadius: 2,
-        backgroundColor: COLOR.primary,
-      }}
-    />
   );
 };
 const Triangle = () => {
@@ -353,6 +377,6 @@ const sr = StyleSheet.create({
     marginTop: 17,
     gap: 3,
   },
-  itemTitle: { fontSize: 18, fontWeight: "500" },
-  itemDescription: { color: "gray" },
+  itemTitle: { fontSize: 19, fontWeight: "700", color: COLOR.dark },
+  itemDescription: { color: COLOR.secondary },
 });
