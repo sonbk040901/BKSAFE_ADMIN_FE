@@ -37,9 +37,9 @@ const Home: FC<HomeProps> = ({ navigation }) => {
     driverApi.updateStatus(receiveBooking ? "AVAILABLE" : "OFFLINE");
   }, [receiveBooking]);
   useEffect(() => {
-    const unSubcriber = bookingSocket.listenSuggestBooking((bookingId) => {
-      navigation.push("BookingReceive", { bookingId });
-    });
+    const unSubcriber = bookingSocket.listenSuggestBooking(() =>
+      navigation.push("BookingReceive"),
+    );
     return unSubcriber;
   }, [navigation]);
   return (
@@ -61,18 +61,10 @@ const Home: FC<HomeProps> = ({ navigation }) => {
             />
           </View>
           <View style={{ gap: 20 }}>
-            <Button
-              onPress={() => {
-                navigation.push("BookingReceive", { bookingId: 34 });
-              }}
-            >
+            <Button onPress={() => navigation.push("BookingReceive")}>
               Switch
             </Button>
-            <Button
-              onPress={() => {
-                navigation.push("CurrentBooking", { bookingId: 34 });
-              }}
-            >
+            <Button onPress={() => navigation.push("CurrentBooking")}>
               Switch 2
             </Button>
           </View>
