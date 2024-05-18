@@ -9,7 +9,7 @@ function useBookingAction({}: UseBookingActionOptions) {
       action,
       id,
     }: {
-      action: "accept" | "reject" | "complete";
+      action: "accept" | "reject" | "start" | "complete";
       id: number;
     }) => {
       if (action === "accept") {
@@ -18,6 +18,7 @@ function useBookingAction({}: UseBookingActionOptions) {
       if (action === "reject") {
         return bookingApi.rejectBooking(id);
       }
+      if (action === "start") return bookingApi.startBooking(id);
       return bookingApi.completeBooking(id);
     },
   });

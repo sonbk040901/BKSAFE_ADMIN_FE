@@ -79,8 +79,8 @@ function useFetch<D, RD extends D | undefined>(
         .then((data) => dispatch({ type: "success", data }))
         .catch((error) => {
           const err = error as AxiosError<ErrorResponse, ErrorResponse>;
-          const res = err.response!.data;
-          if (res.statusCode === 401 && !res.error) {
+          const res = err.response?.data;
+          if (res?.statusCode === 401 && !res?.error) {
             showAlert("Phiên đăng nhập hết hạn", "Vui lòng đăng nhập lại");
             navigation.navigate("Auth");
           } else {

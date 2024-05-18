@@ -17,16 +17,22 @@ export const getCurrentBooking = async () => {
 };
 export const acceptBooking = async (id: number) => {
   const path = `driver/bookings/${id}/accept`;
-  const res = await instance.post(path);
+  const res = await instance.patch(path);
   return res.data;
 };
 export const rejectBooking = async (id: number) => {
   const path = `driver/bookings/${id}/reject`;
-  const res = await instance.post(path);
+  const res = await instance.patch(path);
   return res.data;
 };
+export const startBooking = async (id: number) => {
+  const path = `driver/bookings/${id}/start`;
+  const res = await instance.patch(path);
+  return res.data;
+};
+
 export const completeBooking = async (id: number) => {
   const path = `driver/bookings/${id}/complete`;
-  const res = await instance.post(path);
+  const res = await instance.patch(path);
   return res.data;
 };

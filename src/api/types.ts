@@ -48,10 +48,11 @@ export interface Driver extends Account {
   address: string;
   location: Location;
 }
-export interface User {}
+export interface User extends Account {}
 export type BookingStatus =
   | "PENDING"
   | "ACCEPTED"
+  | "RECEIVED"
   | "REJECTED"
   | "CANCELLED"
   | "DRIVING"
@@ -68,6 +69,7 @@ export interface Booking {
   nextLocationId: number | null;
   driverId: number | null;
   driver: Driver | null;
+  user: User;
   id: number;
   createdAt: string;
   updatedAt: string;
