@@ -51,7 +51,12 @@ const BookingReceive: FC<BookingReceiveProps> = (props) => {
     Promise.all(
       locations.map(async (location) => {
         const result = await ggMapApi.autoComplete(location.address);
-        return result.predictions[0];
+        return (
+          result.predictions[0] ?? {
+            description: location.address,
+            structured_formatting: { main_text: location.address },
+          }
+        );
       }),
     ).then(setLocations);
   }, [booking]);

@@ -27,11 +27,23 @@ export type GeoCodeResultType = {
   }[];
 };
 
-export const autoComplete = async (input: string) => {
-  const path = "/place/autocomplete/json";
-  const url = buildUrl(path, { input });
-  const res = await instance.get<AutoCompleteResultType>(url);
-  return res.data;
+export const autoComplete = async <T extends string | string[]>(
+  input: T,
+): Promise<
+  T extends string ? AutoCompleteResultType : AutoCompleteResultType[]
+> => {
+  const inputs = typeof input === "string" ? [input] : (input as string[]);
+  const results = await Promise.all(
+    inputs.map(async (input) => {
+      const path = "/place/autocomplete/json";
+      const url = buildUrl(path, { input });
+      const res = await instance.get<AutoCompleteResultType>(url);
+      return res.data;
+    }),
+  );
+  return (typeof input === "string" ? results[0] : results) as T extends string
+    ? AutoCompleteResultType
+    : AutoCompleteResultType[];
 };
 
 export const geoCode = async (address: string) => {
@@ -49,12 +61,5 @@ export const geoReverse = async (lat: number, lng: number) => {
   const res = await instance.get<GeoCodeResultType>(url);
   const data = res.data;
   const results = data.results;
-  // .sort((a, b) => {
-  //   return (
-  //     b.geometry.location.lat +
-  //     b.geometry.location.lng -
-  //     (a.geometry.location.lat + a.geometry.location.lng)
-  //   );
-  // });
   return results?.[0].formatted_address;
 };
