@@ -36,3 +36,5 @@ yarn-error.*
 
 #lock
 yarn.lock
+
+.env
