@@ -4,7 +4,7 @@ import {
   startLocationUpdatesAsync,
   stopLocationUpdatesAsync,
 } from "expo-location";
-import { defineTask } from "expo-task-manager";
+import { defineTask, unregisterTaskAsync } from "expo-task-manager";
 import { useCallback, useEffect, useState } from "react";
 interface Location {
   latitude: number;
@@ -43,6 +43,9 @@ function useLocation() {
       setLocation(locations[0].coords);
     });
     enableNetworkProviderAsync();
+    return () => {
+      unregisterTaskAsync(LOCATION_TASK_NAME);
+    };
   }, []);
   return { location, startLocation, stopLocation, setLocation };
 }
