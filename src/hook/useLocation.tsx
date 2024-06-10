@@ -12,15 +12,16 @@ interface Location {
 }
 
 const LOCATION_TASK_NAME = "background-location-task";
-function useLocation() {
+function useLocation(key?: string) {
+  const taskName = key ? `${LOCATION_TASK_NAME}-${key}` : LOCATION_TASK_NAME;
   const [location, setLocation] = useState<Location>();
   const stopLocation = useCallback(async () => {
-    await stopLocationUpdatesAsync(LOCATION_TASK_NAME);
-  }, []);
+    await stopLocationUpdatesAsync(taskName).catch(() => {});
+  }, [taskName]);
   const startLocation = useCallback(async () => {
     await enableNetworkProviderAsync();
     await new Promise((r) => setTimeout(r, 1000));
-    await startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+    await startLocationUpdatesAsync(taskName, {
       accuracy: LocationAccuracy.Highest,
       timeInterval: 1000,
       distanceInterval: 1,
@@ -31,9 +32,9 @@ function useLocation() {
           "To turn off, go back to the app and switch something off.",
       },
     });
-  }, []);
+  }, [taskName]);
   useEffect(() => {
-    defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
+    defineTask(taskName, ({ data, error }) => {
       const { locations } = data as {
         locations: { coords: { latitude: number; longitude: number } }[];
       };
@@ -44,9 +45,9 @@ function useLocation() {
     });
     enableNetworkProviderAsync();
     return () => {
-      unregisterTaskAsync(LOCATION_TASK_NAME);
+      unregisterTaskAsync(taskName);
     };
-  }, []);
+  }, [taskName]);
   return { location, startLocation, stopLocation, setLocation };
 }
 

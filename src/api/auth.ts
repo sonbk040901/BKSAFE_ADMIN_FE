@@ -29,7 +29,7 @@ export const logout = async () => {
   await storage.removeData("user");
 };
 export const getProfile = async () => {
-  const path = "auth/driver-info";
+  const path = "auth";
   const res = await instance.get<Account>(path);
   return res.data;
 };

@@ -63,6 +63,7 @@ const Login = () => {
           }}
           onSubmitEditing={handleEmailSubmit}
           placeholder="Số điện thoại"
+          keyboardType="phone-pad"
         />
         <Input
           ref={passwordRef}

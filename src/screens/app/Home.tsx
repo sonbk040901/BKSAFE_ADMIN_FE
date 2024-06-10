@@ -16,7 +16,8 @@ const Home: FC<HomeProps> = ({ navigation }) => {
   const { data } = useInitAppContext();
   const [checked, setChecked] = useState(false);
   const [receiveBooking, setReceiveBooking] = useState(false);
-  const { location, startLocation, stopLocation, setLocation } = useLocation();
+  const { location, startLocation, stopLocation, setLocation } =
+    useLocation("home");
   const handleToggleLocation = () => {
     if (checked) {
       stopLocation();
@@ -62,10 +63,10 @@ const Home: FC<HomeProps> = ({ navigation }) => {
           </View>
           <View style={{ gap: 20 }}>
             <Button onPress={() => navigation.push("BookingReceive")}>
-              Switch
+              Xem chuyến đi được đề xuất
             </Button>
             <Button onPress={() => navigation.push("CurrentBooking")}>
-              Switch 2
+              Xem chuyến đi hiện tại
             </Button>
           </View>
         </Card>

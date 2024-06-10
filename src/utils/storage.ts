@@ -12,6 +12,8 @@ export const getData = async (key: string) => {
     const value = await getItemAsync(key);
     return value ? JSON.parse(value) : null;
   } catch (error) {
+    // eslint-disable-next-line no-console
+    console.log(error);
     throw "Error while getting data";
   }
 };
