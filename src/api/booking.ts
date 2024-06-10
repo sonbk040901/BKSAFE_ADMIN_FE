@@ -1,38 +1,38 @@
 import instance from "./axios";
 import { Booking } from "./types";
 export const getBooking = async (id: number) => {
-  const path = `driver/bookings/${id}`;
+  const path = `bookings/${id}`;
   const res = await instance.get<Booking>(path);
   return res.data;
 };
 export const getReceiveBooking = async () => {
-  const path = "driver/bookings/receive";
+  const path = "bookings/receive";
   const res = await instance.get<Booking>(path);
   return res.data;
 };
 export const getCurrentBooking = async () => {
-  const path = "driver/bookings/current";
+  const path = "bookings/current";
   const res = await instance.get<Booking>(path);
   return res.data;
 };
 export const acceptBooking = async (id: number) => {
-  const path = `driver/bookings/${id}/accept`;
+  const path = `bookings/${id}/accept`;
   const res = await instance.patch(path);
   return res.data;
 };
 export const rejectBooking = async (id: number) => {
-  const path = `driver/bookings/${id}/reject`;
+  const path = `bookings/${id}/reject`;
   const res = await instance.patch(path);
   return res.data;
 };
 export const startBooking = async (id: number) => {
-  const path = `driver/bookings/${id}/start`;
+  const path = `bookings/${id}/start`;
   const res = await instance.patch(path);
   return res.data;
 };
 
 export const completeBooking = async (id: number) => {
-  const path = `driver/bookings/${id}/complete`;
+  const path = `bookings/${id}/complete`;
   const res = await instance.patch(path);
   return res.data;
 };

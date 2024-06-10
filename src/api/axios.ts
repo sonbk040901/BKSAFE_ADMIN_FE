@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getData } from "../utils/storage";
 
-export const BASE_URL = `${process.env.EXPO_PUBLIC_BACKEND_URL}:${process.env.EXPO_PUBLIC_BACKEND_PORT}/`;
+export const BASE_URL = `${process.env.EXPO_PUBLIC_BACKEND_URL}:${process.env.EXPO_PUBLIC_BACKEND_PORT}/driver`;
 export const axiosInstance = axios.create({
   baseURL: BASE_URL,
   headers: {

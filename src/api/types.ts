@@ -36,7 +36,6 @@ export interface Account {
   fullName: string;
   avatar: string | null;
   gender: Gender;
-  driver: Driver | null;
 }
 export interface Driver extends Account {
   name: string;
