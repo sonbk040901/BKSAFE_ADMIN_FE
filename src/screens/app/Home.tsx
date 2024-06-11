@@ -7,7 +7,7 @@ import AppWrapper from "../../components/AppWrapper";
 import Card from "../../components/Card";
 import { useInitAppContext } from "../../hook/useInitApp";
 import useLocation from "../../hook/useLocation";
-import { bookingSocket, driverSocket } from "../../socket";
+import { emit, subcribe } from "../../socket";
 import type { AppNavigationProp } from "../../types/navigation";
 interface HomeProps {
   navigation: AppNavigationProp;
@@ -32,16 +32,13 @@ const Home: FC<HomeProps> = ({ navigation }) => {
   };
   useEffect(() => {
     if (!location) return;
-    driverSocket.emitUpdateLocation(location);
+    emit("driver/update-location", location);
   }, [location]);
   useEffect(() => {
     driverApi.updateStatus(receiveBooking ? "AVAILABLE" : "OFFLINE");
   }, [receiveBooking]);
   useEffect(() => {
-    const unSubcriber = bookingSocket.listenSuggestBooking(() =>
-      navigation.push("BookingReceive"),
-    );
-    return unSubcriber;
+    return subcribe("booking/suggest", () => navigation.push("BookingReceive"));
   }, [navigation]);
   return (
     <AppWrapper>

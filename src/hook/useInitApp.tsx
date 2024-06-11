@@ -5,7 +5,10 @@ import {
 import React, { createContext, useEffect, useState } from "react";
 import { Account, ErrorResponse } from "../api";
 import useProfile from "../api/hook/useProfile";
-import { bookingSocket, driverSocket } from "../socket";
+import {
+  createConnect,
+  disconnect
+} from "../socket";
 type AuthStatus = "undetermined" | "authenticated" | "unauthenticated";
 
 export default function useInitApp() {
@@ -35,16 +38,14 @@ export default function useInitApp() {
   }, []);
   useEffect(() => {
     const connectSocket = async () => {
-      await driverSocket.connect();
-      await bookingSocket.connect();
+      await createConnect();
       setSocketReady(true);
       return;
     };
     if (status === "success") {
       connectSocket();
       return () => {
-        driverSocket.disconnect();
-        bookingSocket.disconnect();
+        disconnect();
         setSocketReady(false);
       };
     }
