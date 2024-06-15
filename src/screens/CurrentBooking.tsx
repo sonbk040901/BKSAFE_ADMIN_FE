@@ -1,18 +1,18 @@
+import { Button, Divider, Image, Switch } from "@rneui/themed";
 import React, { useEffect, useRef, useState } from "react";
-import { Text, View, StyleSheet } from "react-native";
-import { API_KEY, AutoCompleteResultType } from "../api/ggmap";
-import { AppNavigationProp } from "../types/navigation";
-import useCurrentBooking from "../api/hook/useCurrentBooking";
-import useBookingAction from "../api/hook/useBookingAction";
+import { StyleSheet, Text, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
-import { COLOR, IMAGE } from "../constants";
 import Animated from "react-native-reanimated";
-import useLocation from "../hook/useLocation";
-import { Button, Divider, Image, Switch } from "@rneui/themed";
-import { driverSocket } from "../socket";
 import { ggMapApi } from "../api";
+import { API_KEY, AutoCompleteResultType } from "../api/ggmap";
+import useBookingAction from "../api/hook/useBookingAction";
+import useCurrentBooking from "../api/hook/useCurrentBooking";
 import Badge from "../components/common/Badge";
+import { COLOR, IMAGE } from "../constants";
+import useLocation from "../hook/useLocation";
+import { emit } from "../socket";
+import { AppNavigationProp } from "../types/navigation";
 interface CurrentBookingProps {
   navigation: AppNavigationProp;
 }
@@ -28,7 +28,7 @@ const CurrentBooking = ({}: CurrentBookingProps) => {
   const { locations, user, price, status } = booking ?? {};
   useEffect(() => {
     if (!location) return;
-    driverSocket.emitUpdateLocation(location);
+    emit("driver/update-location", location);
   }, [location]);
   useEffect(() => {
     if (!locations || locations.length === 0) return;

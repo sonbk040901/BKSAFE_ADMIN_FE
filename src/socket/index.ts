@@ -56,7 +56,7 @@ export const subcribe = <D = unknown>(
 export const emit = <T = unknown, D = unknown>(
   event: SocketEmitEvent,
   payload: T,
-  cb?: (data: D) => void,
+  cb: (data: D) => void = () => 0,
 ) => {
   const [namespace, eventName] = event.split("/") as [SocketNameSpace, string];
   const socket = sockets[namespace];
