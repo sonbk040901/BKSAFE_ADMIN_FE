@@ -2,7 +2,11 @@ import axios from "axios";
 import defaultBuildUrl from "../utils/searchParam";
 
 const GOOGLE_MAPS_BASE_URL = "https://maps.googleapis.com/maps/api";
-export const API_KEY = process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY!;
+export let API_KEY = process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY!;
+export const getApiKey = () => API_KEY;
+export const updateApiKey = (key: string) => {
+  API_KEY = key;
+};
 const instance = axios.create({
   baseURL: GOOGLE_MAPS_BASE_URL,
 });

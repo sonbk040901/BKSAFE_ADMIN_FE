@@ -3,12 +3,9 @@ import {
   requestForegroundPermissionsAsync,
 } from "expo-location";
 import React, { createContext, useEffect, useState } from "react";
-import { Account, ErrorResponse } from "../api";
+import { Account, ErrorResponse, mapApi } from "../api";
 import useProfile from "../api/hook/useProfile";
-import {
-  createConnect,
-  disconnect
-} from "../socket";
+import { createConnect, disconnect } from "../socket";
 type AuthStatus = "undetermined" | "authenticated" | "unauthenticated";
 
 export default function useInitApp() {
@@ -17,8 +14,12 @@ export default function useInitApp() {
     PermissionStatus.UNDETERMINED,
   );
   const [socketReady, setSocketReady] = useState(false);
+  const [apiKeyReady, setApiKeyReady] = useState(false);
   const authStatus: AuthStatus =
-    status === "idle" || status === "loading" || socketReady === false
+    status === "idle" ||
+    status === "loading" ||
+    socketReady === false ||
+    apiKeyReady === false
       ? "undetermined"
       : status === "success"
       ? "authenticated"
@@ -44,6 +45,7 @@ export default function useInitApp() {
     };
     if (status === "success") {
       connectSocket();
+      mapApi.getApiKey().then(() => setApiKeyReady(true));
       return () => {
         disconnect();
         setSocketReady(false);

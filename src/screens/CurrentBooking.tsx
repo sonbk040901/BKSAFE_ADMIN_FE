@@ -5,7 +5,7 @@ import MapView, { Marker } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 import Animated from "react-native-reanimated";
 import { ggMapApi } from "../api";
-import { API_KEY, AutoCompleteResultType } from "../api/ggmap";
+import { AutoCompleteResultType, getApiKey } from "../api/ggmap";
 import useBookingAction from "../api/hook/useBookingAction";
 import useCurrentBooking from "../api/hook/useCurrentBooking";
 import Badge from "../components/common/Badge";
@@ -85,7 +85,7 @@ const CurrentBooking = ({}: CurrentBookingProps) => {
       >
         {locations && (
           <MapViewDirections
-            apikey={API_KEY}
+            apikey={getApiKey()}
             region="vn"
             language="vi"
             timePrecision="now"

@@ -1,13 +1,13 @@
-import React, { useEffect, useRef } from "react";
-import { Text, View, StyleSheet } from "react-native";
-import Card from "../Card";
 import { Avatar, Button, Divider, Icon, Skeleton } from "@rneui/themed";
-import { COLOR } from "../../constants/color";
+import React, { useEffect, useRef } from "react";
+import { StyleSheet, Text, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import MapView from "react-native-maps";
-import { Booking, BookingStatus } from "../../api";
 import MapViewDirections from "react-native-maps-directions";
-import { API_KEY } from "../../api/ggmap";
+import { Booking, BookingStatus } from "../../api";
+import { getApiKey } from "../../api/ggmap";
+import { COLOR } from "../../constants/color";
+import Card from "../Card";
 type CardTravelProps = {
   title: string;
   data: Nullable<Booking>;
@@ -27,6 +27,7 @@ const statusMapping: Record<BookingStatus | "none", string> = {
   COMPLETED: "Chuyến đi đã hoàn thành",
   REJECTED: "Tài xế đã từ chối chuyến đi",
   CANCELLED: "Chuyến đi đã bị hủy",
+  RECEIVED: "Tài xế đã nhận chuyến đi",
 };
 const CardTravel = (props: CardTravelProps) => {
   const { title, onPress, data } = props;
@@ -150,7 +151,7 @@ const MiniMap = ({ booking }: { booking: Nullable<Booking> }) => {
       >
         {locations && (
           <MapViewDirections
-            apikey={API_KEY}
+            apikey={getApiKey()}
             region="vn"
             language="vi"
             timePrecision="now"
