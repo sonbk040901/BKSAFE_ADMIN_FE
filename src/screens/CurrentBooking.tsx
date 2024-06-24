@@ -13,11 +13,14 @@ import { COLOR, IMAGE } from "../constants";
 import useLocation from "../hook/useLocation";
 import { emit } from "../socket";
 import { AppNavigationProp } from "../types/navigation";
+import { showAlert } from "../utils/alert";
+import { useNavigation } from "@react-navigation/native";
 interface CurrentBookingProps {
   navigation: AppNavigationProp;
 }
 
 const CurrentBooking = ({}: CurrentBookingProps) => {
+  const navigation = useNavigation();
   const { booking, refetch } = useCurrentBooking();
   const [checked, setChecked] = useState(true);
   const { mutateAsync: bookingAction } = useBookingAction({});
@@ -214,11 +217,16 @@ const CurrentBooking = ({}: CurrentBookingProps) => {
                   refetch();
                 });
               else
-                bookingAction({ id: booking.id, action: "complete" }).then(
-                  () => {
-                    refetch();
-                  },
-                );
+                bookingAction({ id: booking.id, action: "complete" })
+                  .then(() => {
+                    navigation.goBack();
+                  })
+                  .catch(() => {
+                    showAlert(
+                      "Không thể hoàn thành chuyến đi",
+                      "Bạn cách điểm đến quá xa!",
+                    );
+                  });
             }}
           >
             {status === "RECEIVED"
