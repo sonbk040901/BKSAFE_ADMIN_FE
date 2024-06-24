@@ -9,6 +9,7 @@ import { useInitAppContext } from "../../hook/useInitApp";
 import useLocation from "../../hook/useLocation";
 import { emit, subcribe } from "../../socket";
 import type { AppNavigationProp } from "../../types/navigation";
+import Hotline from "../../components/home/Hotline";
 interface HomeProps {
   navigation: AppNavigationProp;
 }
@@ -51,17 +52,28 @@ const Home: FC<HomeProps> = ({ navigation }) => {
           </View>
         </Card>
         <Card style={{ marginTop: 15 }}>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Text>{receiveBooking ? "Tắt" : "Bật"} nhận đặt tài xế</Text>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: 10,
+            }}
+          >
+            <View>
+              <Text style={{ fontWeight: "bold", fontSize: 22 }}>
+                Tài xế đang {receiveBooking ? "rảnh" : "bận"}
+              </Text>
+              <Text style={{ fontWeight: "500", fontSize: 20 }}>
+                {receiveBooking ? "Sẵn sàng" : "Không"} nhận đặt tài xế
+              </Text>
+            </View>
             <Switch
               value={receiveBooking}
               onValueChange={handleToggleReceiveBooking}
             />
           </View>
           <View style={{ gap: 20 }}>
-            <Button onPress={() => navigation.push("BookingReceive")}>
-              Xem chuyến đi được đề xuất
-            </Button>
             <Button onPress={() => navigation.push("CurrentBooking")}>
               Xem chuyến đi hiện tại
             </Button>
@@ -106,6 +118,7 @@ const Home: FC<HomeProps> = ({ navigation }) => {
           </MapView>
         </Card>
       </View>
+      <Hotline />
     </AppWrapper>
   );
 };

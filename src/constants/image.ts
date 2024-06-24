@@ -5,4 +5,5 @@ export const IMAGE = {
   driverPin: require("../assets/images/driver-pin.png"),
   homePin: require("../assets/images/home-pin.png"),
   downPin: require("../assets/images/down-pin.png"),
+  hotline: require("../assets/images/hotline.png"),
 } as const;

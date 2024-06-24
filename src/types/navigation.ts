@@ -15,7 +15,8 @@ export type RootNavigationParamList = {
 export type RootNavigationProp = StackNavigationProp<RootNavigationParamList>;
 export type AppNavigationParamList = {
   Home: undefined;
-  Settings: undefined;
+  Setting: undefined;
+  History: undefined;
   Profile: undefined;
 };
 export type AppNavigationProp = DrawerNavigationProp<AppNavigationParamList> &
