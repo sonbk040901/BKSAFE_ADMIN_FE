@@ -1,13 +1,11 @@
+import { DrawerItem } from "@react-navigation/drawer";
+import { Icon } from "@rneui/themed";
 import React, { FC } from "react";
 import { Text, View } from "react-native";
 import { COLOR } from "../constants/color";
-import { DrawerItem } from "@react-navigation/drawer";
-import { Icon } from "@rneui/themed";
-import { mappingRouteName } from "../utils/route";
-import { AppNavigationParamList } from "../types/navigation";
 
 interface CustomDrawerItemProps {
-  name: keyof AppNavigationParamList;
+  name: string;
   onPress: () => void;
   focused: boolean;
   icon: string;
@@ -43,7 +41,7 @@ const CustomDrawerItem: FC<CustomDrawerItemProps> = ({
                 fontWeight: "500",
               }}
             >
-              {mappingRouteName(name, true)}
+              {name}
             </Text>
           </View>
         );

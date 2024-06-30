@@ -25,8 +25,11 @@ export const signup = async (signup: SignupDTO) => {
   await instance.post(path, signup);
 };
 export const logout = async () => {
+  const path = "auth/logout";
+  const res = await instance.post<string>(path);
   await storage.removeData("token");
   await storage.removeData("user");
+  return res.data;
 };
 export const getProfile = async () => {
   const path = "auth";

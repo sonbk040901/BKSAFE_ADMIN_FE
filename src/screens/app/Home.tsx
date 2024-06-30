@@ -36,7 +36,7 @@ const Home: FC<HomeProps> = ({ navigation }) => {
     emit("driver/update-location", location);
   }, [location]);
   useEffect(() => {
-    driverApi.updateStatus(receiveBooking ? "AVAILABLE" : "OFFLINE");
+    driverApi.updateStatus(receiveBooking ? "AVAILABLE" : "BUSY");
   }, [receiveBooking]);
   useEffect(() => {
     return subcribe("booking/suggest", () => navigation.push("BookingReceive"));
