@@ -1,8 +1,10 @@
 /* eslint-disable no-console */
-import { io, type Socket } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
 import { getData } from "../utils/storage";
-export const ENDPOINT = `${process.env.EXPO_PUBLIC_BACKEND_URL}:${process.env.EXPO_PUBLIC_BACKEND_PORT}`;
-export const connect = async (path: SocketNameSpace) => {
+const { EXPO_PUBLIC_BACKEND_URL: BASE_URL, EXPO_PUBLIC_BACKEND_PORT: PORT } =
+  process.env;
+export const ENDPOINT = PORT ? `${BASE_URL}:${PORT}` : `${BASE_URL}`;
+export const connect = async (path: string = "") => {
   const token = await getData("token");
   const socket = io(`${ENDPOINT}/${path}`, {
     extraHeaders: {
@@ -11,18 +13,25 @@ export const connect = async (path: SocketNameSpace) => {
   });
   return socket;
 };
+type EventsMapping = {
+  booking: {
+    subcribe: "suggest";
 
-export type SocketNameSpace = "booking" | "driver";
-export type BookingSubcribeEvent = "suggest";
-export type BookingEmitEvent = "";
-export type DriverEmitEvent = "update-location";
-export type DriverSubcribeEvent = "";
-export type SocketSubcribeEvent =
-  | `booking/${BookingSubcribeEvent}`
-  | `driver/${DriverSubcribeEvent}`;
-export type SocketEmitEvent =
-  | `booking/${BookingEmitEvent}`
-  | `driver/${DriverEmitEvent}`;
+    emit: never;
+  };
+  driver: {
+    subcribe: never;
+    emit: "update-location";
+  };
+};
+export type SocketNameSpace = keyof EventsMapping;
+export type SocketSubcribeEvent<T = SocketNameSpace> = T extends SocketNameSpace
+  ? `${T}/${EventsMapping[T]["subcribe"]}`
+  : never;
+
+export type SocketEmitEvent<T = SocketNameSpace> = T extends SocketNameSpace
+  ? `${T}/${EventsMapping[T]["emit"]}`
+  : never;
 const sockets: Record<SocketNameSpace, Socket | undefined> = {
   booking: undefined,
   driver: undefined,
