@@ -15,6 +15,8 @@ import CurrentBooking from "./src/screens/CurrentBooking";
 import Splash from "./src/screens/Splash";
 import { store } from "./src/states";
 import { RootNavigationParamList } from "./src/types/navigation";
+import DetailChat from "./src/screens/DetailChat";
+import Chat from "./src/screens/Chat";
 
 const Stack = createStackNavigator<RootNavigationParamList>();
 const queryClient = new QueryClient();
@@ -49,6 +51,73 @@ export default function Root() {
                 <Stack.Screen
                   name="CurrentBooking"
                   component={CurrentBooking}
+                />
+
+                <Stack.Screen
+                  name="Chat"
+                  component={Chat}
+                  options={{
+                    transitionSpec: {
+                      open: { animation: "timing", config: { duration: 300 } },
+                      close: {
+                        animation: "timing",
+                        config: { duration: 300 },
+                      },
+                    },
+                    cardStyleInterpolator: ({ current, layouts }) => {
+                      return {
+                        cardStyle: {
+                          transform: [
+                            {
+                              translateX: current.progress.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [layouts.screen.width, 0],
+                              }),
+                            },
+                          ],
+                          opacity: current.progress,
+                        },
+                      };
+                    },
+                    gestureEnabled: true,
+                    // headerShown: false,
+                    // cardStyle: { backgroundColor: "transparent" },
+                  }}
+                />
+                <Stack.Screen
+                  name="DetailChat"
+                  component={DetailChat}
+                />
+                <Stack.Screen
+                  name="Notification"
+                  component={Notification}
+                  options={{
+                    transitionSpec: {
+                      open: { animation: "timing", config: { duration: 300 } },
+                      close: {
+                        animation: "timing",
+                        config: { duration: 300 },
+                      },
+                    },
+                    cardStyleInterpolator: ({ current, layouts }) => {
+                      return {
+                        cardStyle: {
+                          transform: [
+                            {
+                              translateX: current.progress.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [layouts.screen.width, 0],
+                              }),
+                            },
+                          ],
+                          opacity: current.progress,
+                        },
+                      };
+                    },
+                    gestureEnabled: true,
+                    // headerShown: false,
+                    // cardStyle: { backgroundColor: "transparent" },
+                  }}
                 />
               </Stack.Navigator>
             </Provider>

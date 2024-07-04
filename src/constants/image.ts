@@ -1,4 +1,5 @@
 export const IMAGE = {
+  cropLogo: require("../assets/images/crop-logo.png"),
   logo: require("../assets/logo.png"),
   pin: require("../assets/images/pin.png"),
   location: require("../assets/images/location.png"),

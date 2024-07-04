@@ -3,4 +3,5 @@ export * as authApi from "./auth";
 export * as driverApi from "./driver";
 export * as bookingApi from "./booking";
 export * as mapApi from "./map";
+export * as chatApi from "./chat";
 export * from "./types";

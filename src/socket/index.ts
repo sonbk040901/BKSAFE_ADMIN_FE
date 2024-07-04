@@ -16,12 +16,15 @@ export const connect = async (path: string = "") => {
 type EventsMapping = {
   booking: {
     subcribe: "suggest";
-
     emit: never;
   };
   driver: {
     subcribe: never;
     emit: "update-location";
+  };
+  chat: {
+    subcribe: "new-chat";
+    emit: "new-chat";
   };
 };
 export type SocketNameSpace = keyof EventsMapping;
@@ -35,16 +38,19 @@ export type SocketEmitEvent<T = SocketNameSpace> = T extends SocketNameSpace
 const sockets: Record<SocketNameSpace, Socket | undefined> = {
   booking: undefined,
   driver: undefined,
+  chat: undefined,
 };
 export const createConnect = async () => {
   sockets.booking = await connect("booking");
   sockets.driver = await connect("driver");
+  sockets.chat = await connect("chat");
   console.log("Connected to all namespaces");
 };
 export const disconnect = () => {
-  const { booking, driver } = sockets;
+  const { booking, driver, chat } = sockets;
   if (booking) booking.disconnect();
   if (driver) driver.disconnect();
+  if (chat) chat.disconnect();
   console.log("Disconnected to all namespaces");
 };
 

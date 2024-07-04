@@ -41,7 +41,6 @@ export interface Driver extends Account {
   name: string;
   phone: string;
   email: string;
-  avatar: string;
   rating: number;
   birthday: string;
   address: string;
@@ -73,4 +72,24 @@ export interface Booking {
   createdAt: string;
   updatedAt: string;
   status: BookingStatus;
+}
+
+export interface Noti {
+  id: number;
+  title: string;
+  content: string;
+  image?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Chat {
+  id: number;
+  message: string;
+  createdAt: string;
+  userId: number;
+  driverId: number;
+  user: User;
+  driver: Driver;
+  isDriver: boolean;
 }

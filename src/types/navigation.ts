@@ -11,6 +11,9 @@ export type RootNavigationParamList = {
   Auth: undefined;
   BookingReceive: undefined;
   CurrentBooking: undefined;
+  DetailChat: { userId: number };
+  Chat: undefined;
+  Notification: undefined;
 };
 export type RootNavigationProp = StackNavigationProp<RootNavigationParamList>;
 export type AppNavigationParamList = {
@@ -25,7 +28,14 @@ export type AuthNavigationParamList = {
   GetStarted: undefined;
   Login: undefined;
   Register: undefined;
+  Active: undefined;
 };
 export type AuthNavigationProp = StackNavigationProp<AuthNavigationParamList> &
   StackNavigationProp<RootNavigationParamList>;
 export type MapRouteProp = RouteProp<RootNavigationParamList, "Map">;
+
+export type DetailChatRouteProp = RouteProp<
+  RootNavigationParamList,
+  "DetailChat"
+>;
+export type ActiveRouteProp = RouteProp<AuthNavigationParamList, "Active">;
