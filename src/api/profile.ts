@@ -1,7 +1,7 @@
 import instance from "./axios";
-import { Account } from "./types";
+import { Driver } from "./types";
 
-export const update = async (dto: Partial<Account>) => {
+export const update = async (dto: Partial<Driver>) => {
   const res = await instance.patch<unknown>("profile", dto);
   return res.data;
 };

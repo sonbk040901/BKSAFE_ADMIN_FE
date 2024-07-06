@@ -25,6 +25,8 @@ import Item from "./Item";
 const DetailInfo = () => {
   const { fullName, email, phone, status, avatar, address, birthday } =
     useAppSelector(selectProfile);
+  console.log(fullName, email, phone, status, avatar, address, birthday);
+
   const dispatch = useAppDispatch();
   const navigation = useNavigation();
   const [showDatePicker, setShowDatePicker] = useState(false);

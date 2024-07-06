@@ -42,6 +42,9 @@ export const updateProfile = createAsyncThunk(
         avatar: url,
         fullName: state.fullName,
         email: state.email,
+        address: state.address,
+        birthday: state.birthday,
+        gender: state.gender,
       });
     } catch (error) {
       const err = error as AxiosError;
