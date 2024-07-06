@@ -18,6 +18,7 @@ import { RootNavigationParamList } from "./src/types/navigation";
 import DetailChat from "./src/screens/DetailChat";
 import Chat from "./src/screens/Chat";
 import Notification from "./src/screens/Notification";
+import HistoryDetail from "./src/screens/HistoryDetail";
 
 const Stack = createStackNavigator<RootNavigationParamList>();
 const queryClient = new QueryClient();
@@ -119,6 +120,10 @@ export default function Root() {
                     // headerShown: false,
                     // cardStyle: { backgroundColor: "transparent" },
                   }}
+                />
+                <Stack.Screen
+                  name="HistoryDetail"
+                  component={HistoryDetail}
                 />
               </Stack.Navigator>
             </Provider>

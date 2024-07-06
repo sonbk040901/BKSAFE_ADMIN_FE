@@ -1,18 +1,20 @@
 import React from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import { RefreshControl } from "react-native-gesture-handler";
-import Item, { ItemProps } from "./Item";
+import { Booking } from "../../api";
+import { RootNavigationProp } from "../../types/navigation";
+import Item from "./Item";
 
 interface ItemsProps {
-  data: ItemProps[];
+  data: Booking[];
   loading?: boolean;
-  onSelected?: (item: Omit<ItemProps, "onPress">) => void;
+  onSelected?: (item: Booking) => void;
   onRequestRefresh: () => void;
+  navigation: RootNavigationProp;
 }
 
 const Items = (props: ItemsProps) => {
-  const { data, onSelected, onRequestRefresh, loading = true } = props;
-
+  const { data, onRequestRefresh, loading = true, navigation } = props;
   return (
     <View style={styles.container}>
       <FlatList
@@ -24,11 +26,14 @@ const Items = (props: ItemsProps) => {
           />
         }
         style={{ width: "100%" }}
+        contentContainerStyle={{ gap: 6 }}
         data={data}
-        renderItem={(data) => (
+        renderItem={({ item }) => (
           <Item
-            {...data.item}
-            onPress={() => onSelected?.(data.item)}
+            booking={item}
+            onPress={() => {
+              navigation.push("HistoryDetail", { bookingId: item.id });
+            }}
           />
         )}
         keyExtractor={(item) => item.id.toString()}

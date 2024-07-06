@@ -27,7 +27,7 @@ const Chat: FC<ChatProps> = ({ navigation }) => {
         flexDirection: "row",
         alignItems: "center",
       }}
-      onPress={() => navigation.push("DetailChat", { userId: item.driverId })}
+      onPress={() => navigation.push("DetailChat", { userId: item.userId })}
     >
       <Image
         src={item.driver.avatar ?? undefined}

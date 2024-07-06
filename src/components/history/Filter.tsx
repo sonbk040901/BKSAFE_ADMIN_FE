@@ -1,17 +1,22 @@
-import { Button, Icon } from "@rneui/themed";
-import React from "react";
+import { Button, Dialog, Icon } from "@rneui/themed";
+import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
+import { BookingStatus } from "../../api";
+import DateTimePicker from "react-native-ui-datepicker";
 
 interface FilterProps {
   time: Dayjs;
+  status?: BookingStatus;
+  onChange?: (time: Dayjs, status?: BookingStatus) => void;
 }
 
-const Filter = ({ time }: FilterProps) => {
+const Filter = ({ time, status, onChange }: FilterProps) => {
+  const [open, setOpen] = useState(false);
   return (
     <View style={styles.container}>
       <Button
-        title={time.format("DD/MM/YYYY")}
+        title={time.format("MM/YYYY")}
         icon={
           <Icon
             style={{ marginLeft: 5 }}
@@ -21,6 +26,7 @@ const Filter = ({ time }: FilterProps) => {
         }
         type="outline"
         iconRight
+        onPress={() => setOpen(true)}
       />
       <Button
         title={"Tất cả"}
@@ -35,6 +41,26 @@ const Filter = ({ time }: FilterProps) => {
         type="outline"
         color="success"
       />
+
+      <Dialog
+        isVisible={open}
+        onRequestClose={() => setOpen(false)}
+        onDismiss={() => setOpen(false)}
+        animationType="fade"
+        statusBarTranslucent
+        focusable
+      >
+        <View style={{ overflow: "scroll" }}>
+          <DateTimePicker
+            value={time}
+            mode="date"
+            onValueChange={(value) => {
+              if (value) onChange?.(dayjs(value), status);
+              setOpen(false);
+            }}
+          />
+        </View>
+      </Dialog>
     </View>
   );
 };

@@ -5,11 +5,11 @@ import MapView, { Marker } from "react-native-maps";
 import { driverApi } from "../../api";
 import AppWrapper from "../../components/AppWrapper";
 import Card from "../../components/Card";
+import Hotline from "../../components/home/Hotline";
 import { useInitAppContext } from "../../hook/useInitApp";
 import useLocation from "../../hook/useLocation";
 import { emit, subcribe } from "../../socket";
 import type { AppNavigationProp } from "../../types/navigation";
-import Hotline from "../../components/home/Hotline";
 interface HomeProps {
   navigation: AppNavigationProp;
 }

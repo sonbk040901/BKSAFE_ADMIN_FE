@@ -1,31 +1,34 @@
-import { Divider, Icon } from "@rneui/themed";
+import { Divider } from "@rneui/themed";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { COLOR } from "../../constants/color";
 import Card from "../Card";
+import StatisticItem from "./StatisticItem";
 
 interface StatisticProps {
   totalPrice: number;
   totalTravle: number;
+  completedTravle: number;
+  canceledTravle: number;
 }
 
 const Statistic = (props: StatisticProps) => {
-  const { totalPrice, totalTravle } = props;
+  const { totalPrice, totalTravle, completedTravle, canceledTravle } = props;
   return (
     <Card style={styles.container}>
       <View
         style={{
           justifyContent: "center",
           alignItems: "center",
-          paddingVertical: 10,
+          paddingBottom: 5,
         }}
       >
-        <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+        <Text style={{ fontSize: 18, fontWeight: "bold" }}>
           Tổng thanh toán
         </Text>
         <Text
           style={{
-            fontSize: 24,
+            fontSize: 22,
             fontWeight: "bold",
             color: COLOR.primary,
           }}
@@ -39,20 +42,32 @@ const Statistic = (props: StatisticProps) => {
       />
       <View
         style={{
-          paddingVertical: 15,
+          paddingTop: 7,
+          paddingBottom: 11,
           flexDirection: "row",
           justifyContent: "space-between",
           alignItems: "center",
         }}
       >
-        <View style={{ flexDirection: "row", alignItems: "baseline", gap: 5 }}>
-          <Icon
-            name="car"
-            type="font-awesome-5"
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-around",
+            width: "100%",
+          }}
+        >
+          <StatisticItem
+            title="Tổng chuyến"
+            count={totalTravle}
           />
-          <Text style={{ fontSize: 20, fontWeight: "500", color: COLOR.secondary2 }}>
-            {totalTravle} chuyến đi
-          </Text>
+          <StatisticItem
+            title="Thành công"
+            count={completedTravle}
+          />
+          <StatisticItem
+            title="Chuyến hủy"
+            count={canceledTravle}
+          />
         </View>
       </View>
     </Card>

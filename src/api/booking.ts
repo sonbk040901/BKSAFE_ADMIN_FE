@@ -1,5 +1,29 @@
 import instance from "./axios";
-import { Booking } from "./types";
+import {
+  Booking,
+  BookingStatus,
+  PagingAndSortDto,
+  PagingAndSortResponse,
+} from "./types";
+export interface FindAllBookingDTO extends PagingAndSortDto {
+  status?: BookingStatus;
+  time?: string;
+}
+
+export const getAll = async (findAll: Type<FindAllBookingDTO>) => {
+  const path = "bookings";
+  const res = await instance.get<PagingAndSortResponse<Booking>>(path, {
+    params: findAll,
+  });
+  return res.data;
+};
+
+export const getOne = async (id: number) => {
+  const path = `bookings/${id}`;
+  const res = await instance.get<Booking>(path);
+  return res.data;
+};
+
 export const getBooking = async (id: number) => {
   const path = `bookings/${id}`;
   const res = await instance.get<Booking>(path);

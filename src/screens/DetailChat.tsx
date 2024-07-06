@@ -169,7 +169,7 @@ const mappingChat = (
         _id: chat.id,
         text: chat.message,
         createdAt: new Date(chat.createdAt),
-        user: mappingAcc(chat.isDriver ? driver : user),
+        user: mappingAcc(chat.isDriver ? user : driver),
       } as IMessage),
   );
 };

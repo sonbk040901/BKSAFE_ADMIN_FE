@@ -10,7 +10,8 @@ export const getChats = async () => {
   const res = await instance.get<Chat[]>("chats");
   return res.data;
 };
-export const getChatDetail = async (driverId: number) => {
-  const res = await instance.get<ChatDetalResponse>(`chats/${driverId}`);
+
+export const getChatDetail = async (userId: number) => {
+  const res = await instance.get<ChatDetalResponse>(`chats/${userId}`);
   return res.data;
 };

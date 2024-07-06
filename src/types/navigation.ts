@@ -14,6 +14,7 @@ export type RootNavigationParamList = {
   DetailChat: { userId: number };
   Chat: undefined;
   Notification: undefined;
+  HistoryDetail: { bookingId: number };
 };
 export type RootNavigationProp = StackNavigationProp<RootNavigationParamList>;
 export type AppNavigationParamList = {
@@ -37,5 +38,9 @@ export type MapRouteProp = RouteProp<RootNavigationParamList, "Map">;
 export type DetailChatRouteProp = RouteProp<
   RootNavigationParamList,
   "DetailChat"
+>;
+export type DetailHistoryRouteProp = RouteProp<
+  RootNavigationParamList,
+  "HistoryDetail"
 >;
 export type ActiveRouteProp = RouteProp<AuthNavigationParamList, "Active">;
