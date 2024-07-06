@@ -1,6 +1,6 @@
 import { Icon, IconProps } from "@rneui/themed";
 import React, { useRef } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import { COLOR } from "../../constants/color";
 
@@ -9,6 +9,7 @@ interface ItemProps {
   name: IconProps["name"];
   content: string;
   onChange?: (value: string) => void;
+  onPress?: () => void;
   editable?: boolean;
 }
 const Item = ({
@@ -17,6 +18,7 @@ const Item = ({
   content,
   onChange,
   editable = true,
+  onPress,
 }: ItemProps) => {
   const inputRef = useRef<TextInput>(null);
   return (
@@ -28,17 +30,29 @@ const Item = ({
           type="feather"
           {...icon}
         />
-        <View style={{ flex: 1 }}>
-          <TextInput
-            ref={inputRef}
-            numberOfLines={1}
-            style={styles.text}
-            onChangeText={onChange}
-            editable={editable}
-          >
-            {content}
-          </TextInput>
-        </View>
+        <TouchableOpacity
+          style={{ flex: 1 }}
+          onPress={onPress}
+        >
+          {editable ? (
+            <TextInput
+              ref={inputRef}
+              numberOfLines={1}
+              style={styles.text}
+              onChangeText={onChange}
+              editable={editable}
+            >
+              {content}
+            </TextInput>
+          ) : (
+            <Text
+              numberOfLines={1}
+              style={styles.text}
+            >
+              {content}
+            </Text>
+          )}
+        </TouchableOpacity>
       </View>
     </View>
   );

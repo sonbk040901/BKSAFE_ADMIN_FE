@@ -10,10 +10,6 @@ const LoadingModal = (props: ComponentProps<typeof Modal>) => {
       visible
       {...props}
     >
-      {/* <LinearGradient
-        colors={["#8abfff7e", "#ffffff7e", "#ffffff7e", "#429aff7e"]}
-        style={styles.container}
-      > */}
       <View style={styles.container}>
         <Image
           source={IMAGE.logo}

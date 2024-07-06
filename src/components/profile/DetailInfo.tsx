@@ -1,7 +1,8 @@
 import { useNavigation } from "@react-navigation/native";
-import { Avatar, Icon } from "@rneui/themed";
+import { Avatar, Dialog, Icon } from "@rneui/themed";
+import dayjs from "dayjs";
 import * as ImagePicker from "expo-image-picker";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -9,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import DateTimePicker from "react-native-ui-datepicker";
 import { COLOR } from "../../constants/color";
 import { STYLE } from "../../constants/theme";
 import { useAppDispatch, useAppSelector } from "../../states";
@@ -21,10 +23,11 @@ import Card from "../Card";
 import Item from "./Item";
 
 const DetailInfo = () => {
-  const { fullName, email, phone, status, avatar } =
+  const { fullName, email, phone, status, avatar, address, birthday } =
     useAppSelector(selectProfile);
   const dispatch = useAppDispatch();
   const navigation = useNavigation();
+  const [showDatePicker, setShowDatePicker] = useState(false);
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
       dispatch(getProfile());
@@ -88,8 +91,14 @@ const DetailInfo = () => {
           { name: "user", content: fullName, key: "fullName" },
           { name: "mail", content: email, key: "email" },
           { name: "phone", content: phone, key: "phone", editable: false },
-          // { name: "map-pin", content: "Hà Nội" },
-          // { name: "calendar", content: "01/01/2001" },
+          { name: "map-pin", content: address, key: "address" },
+          {
+            name: "calendar",
+            content: dayjs(birthday).format("DD/MM/YYYY"),
+            key: "birthday",
+            editable: false,
+            onPress: () => setShowDatePicker(true),
+          },
         ]}
         renderItem={({ item }) => (
           <Item
@@ -100,6 +109,26 @@ const DetailInfo = () => {
           />
         )}
       />
+      <Dialog
+        isVisible={showDatePicker}
+        statusBarTranslucent
+        onRequestClose={() => setShowDatePicker(false)}
+        onDismiss={() => setShowDatePicker(false)}
+      >
+        <DateTimePicker
+          mode="date"
+          value={dayjs(birthday).toDate()}
+          onValueChange={(date) => {
+            if (!date) return;
+            dispatch(
+              patchProfile({
+                birthday: dayjs(date).toDate().toISOString(),
+              }),
+            );
+            setShowDatePicker(false);
+          }}
+        />
+      </Dialog>
     </Card>
   );
 };

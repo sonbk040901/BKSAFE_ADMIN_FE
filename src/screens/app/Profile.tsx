@@ -3,8 +3,8 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 import AppWrapper from "../../components/AppWrapper";
 import DetailInfo from "../../components/profile/DetailInfo";
-import { useAppDispatch } from "../../states";
-import { updateProfile } from "../../states/slice/profile";
+import { useAppDispatch, useAppSelector } from "../../states";
+import { selectProfile, updateProfile } from "../../states/slice/profile";
 import type { AuthNavigationProp } from "../../types/navigation";
 
 interface ProfileProps {
@@ -13,12 +13,14 @@ interface ProfileProps {
 
 const Profile = ({}: ProfileProps) => {
   const dispatch = useAppDispatch();
+  const { status } = useAppSelector(selectProfile);
   return (
     <AppWrapper>
       <View style={styles.container}>
         <DetailInfo />
         <Button
           raised
+          disabled={status === "loading"}
           onPress={() => dispatch(updateProfile())}
         >
           Cập nhật
