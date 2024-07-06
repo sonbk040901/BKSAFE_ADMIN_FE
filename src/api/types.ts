@@ -30,7 +30,6 @@ export interface Account {
   id: number;
   createdAt: string;
   updatedAt: string;
-  username: string;
   email: string;
   phone: string;
   fullName: string;
@@ -38,7 +37,6 @@ export interface Account {
   gender: Gender;
 }
 export interface Driver extends Account {
-  name: string;
   phone: string;
   email: string;
   rating: number;

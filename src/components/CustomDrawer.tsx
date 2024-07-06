@@ -1,14 +1,16 @@
 import { DrawerNavigationState } from "@react-navigation/native";
 import { Avatar, Button, Icon } from "@rneui/themed";
-import React from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { authApi } from "../api";
 import { COLOR } from "../constants/color";
 import { useInitAppContext } from "../hook/useInitApp";
+import { useAppDispatch, useAppSelector } from "../states";
+import { getProfile, selectProfile } from "../states/slice/profile";
 import { AppNavigationParamList, AppNavigationProp } from "../types/navigation";
-import CustomDrawerItem from "./CustomDrawerItem";
 import { mappingRouteName } from "../utils/route";
+import CustomDrawerItem from "./CustomDrawerItem";
 const drawerItems: {
   name: string;
   icon: string;
@@ -24,11 +26,16 @@ type Props = {
   state: DrawerNavigationState<AppNavigationParamList>;
 };
 const CustomDrawer = ({ navigation, state }: Props) => {
-  const { data, refetch } = useInitAppContext();
+  const { refetch } = useInitAppContext();
+  const { avatar, fullName, phone } = useAppSelector(selectProfile);
+  const dispatch = useAppDispatch();
   const handleLogout = async () => {
     await authApi.logout();
     refetch();
   };
+  useEffect(() => {
+    dispatch(getProfile());
+  }, [dispatch]);
   return (
     <View style={styles.container}>
       <View style={styles.userItem}>
@@ -44,17 +51,14 @@ const CustomDrawer = ({ navigation, state }: Props) => {
         <View style={styles.userInfo}>
           <Avatar
             size={50}
-            source={require("../assets/images/avatar.png")}
-            avatarStyle={{
-              resizeMode: "contain",
-              width: 50,
-              height: 50,
-            }}
+            source={
+              avatar ? { uri: avatar } : require("../assets/images/avatar.png")
+            }
             containerStyle={styles.avatar}
           />
           <View style={styles.info}>
-            <Text style={styles.fullName}>{data?.fullName}</Text>
-            <Text style={styles.email}>{data?.email}</Text>
+            <Text style={styles.fullName}>{fullName}</Text>
+            <Text style={styles.email}>{phone}</Text>
           </View>
         </View>
       </View>

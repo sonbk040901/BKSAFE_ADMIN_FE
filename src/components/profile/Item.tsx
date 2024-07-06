@@ -1,5 +1,5 @@
 import { Icon, IconProps } from "@rneui/themed";
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { StyleSheet, View } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import { COLOR } from "../../constants/color";
@@ -8,10 +8,16 @@ interface ItemProps {
   icon?: Partial<IconProps>;
   name: IconProps["name"];
   content: string;
+  onChange?: (value: string) => void;
+  editable?: boolean;
 }
-const Item = ({ icon, name, content }: ItemProps) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [isChange, setIsChange] = useState(true);
+const Item = ({
+  icon,
+  name,
+  content,
+  onChange,
+  editable = true,
+}: ItemProps) => {
   const inputRef = useRef<TextInput>(null);
   return (
     <View style={styles.wrapper}>
@@ -27,7 +33,8 @@ const Item = ({ icon, name, content }: ItemProps) => {
             ref={inputRef}
             numberOfLines={1}
             style={styles.text}
-            editable={isChange}
+            onChangeText={onChange}
+            editable={editable}
           >
             {content}
           </TextInput>

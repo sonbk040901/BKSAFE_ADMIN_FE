@@ -1,8 +1,10 @@
+import { Button } from "@rneui/themed";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import AppWrapper from "../../components/AppWrapper";
-import CommonInfo from "../../components/profile/CommonInfo";
 import DetailInfo from "../../components/profile/DetailInfo";
+import { useAppDispatch } from "../../states";
+import { updateProfile } from "../../states/slice/profile";
 import type { AuthNavigationProp } from "../../types/navigation";
 
 interface ProfileProps {
@@ -10,11 +12,17 @@ interface ProfileProps {
 }
 
 const Profile = ({}: ProfileProps) => {
+  const dispatch = useAppDispatch();
   return (
     <AppWrapper>
       <View style={styles.container}>
-        <CommonInfo />
-        <DetailInfo/>
+        <DetailInfo />
+        <Button
+          raised
+          onPress={() => dispatch(updateProfile())}
+        >
+          Cập nhật
+        </Button>
       </View>
     </AppWrapper>
   );

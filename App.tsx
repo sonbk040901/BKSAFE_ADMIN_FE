@@ -17,6 +17,7 @@ import { store } from "./src/states";
 import { RootNavigationParamList } from "./src/types/navigation";
 import DetailChat from "./src/screens/DetailChat";
 import Chat from "./src/screens/Chat";
+import Notification from "./src/screens/Notification";
 
 const Stack = createStackNavigator<RootNavigationParamList>();
 const queryClient = new QueryClient();
