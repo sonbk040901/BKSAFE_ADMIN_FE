@@ -115,12 +115,8 @@ const BookingReceive: FC<BookingReceiveProps> = (props) => {
           </Text>
           <View style={styles.badges}>
             <Badge
-              bg={"#dcdcdcff"}
-              title={"Tiền mặt"}
-            />
-            <Badge
-              bg={"#ffe75d"}
-              title={"Khuyến mãi"}
+              value="Tiền mặt"
+              type="warning"
             />
           </View>
           <View style={{ paddingTop: 10 }}>
