@@ -43,9 +43,9 @@ function useLocation(key?: string) {
       }
       setLocation(locations[0].coords);
     });
-    enableNetworkProviderAsync();
+    enableNetworkProviderAsync().catch(() => {});
     return () => {
-      unregisterTaskAsync(taskName);
+      unregisterTaskAsync(taskName).catch(() => {});
     };
   }, [taskName]);
   return { location, startLocation, stopLocation, setLocation };

@@ -1,3 +1,4 @@
+import { useNavigation } from "@react-navigation/native";
 import { Button, Divider, Image, Switch } from "@rneui/themed";
 import React, { useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
@@ -9,26 +10,33 @@ import { AutoCompleteResultType, getApiKey } from "../api/ggmap";
 import useBookingAction from "../api/hook/useBookingAction";
 import useCurrentBooking from "../api/hook/useCurrentBooking";
 import Badge from "../components/common/Badge";
+import UserInfo from "../components/home/UserInfo";
 import { COLOR, IMAGE } from "../constants";
 import useLocation from "../hook/useLocation";
 import { emit } from "../socket";
 import { AppNavigationProp } from "../types/navigation";
-import { showAlert } from "../utils/alert";
-import { useNavigation } from "@react-navigation/native";
+import { showAlert, showNativeAlert } from "../utils/alert";
 interface CurrentBookingProps {
   navigation: AppNavigationProp;
 }
 
 const CurrentBooking = ({}: CurrentBookingProps) => {
   const navigation = useNavigation();
-  const { booking, refetch } = useCurrentBooking();
+  const { booking, refetch, status: loadCurStatus } = useCurrentBooking();
   const [checked, setChecked] = useState(true);
   const { mutateAsync: bookingAction } = useBookingAction({});
-  const { location, startLocation, stopLocation, setLocation } = useLocation();
+  const { location, startLocation, stopLocation, setLocation } =
+    useLocation("current-booking");
   const [nextLocation, setNextLocation] =
     useState<AutoCompleteResultType["predictions"][number]>();
   const mapRef = useRef<MapView>(null);
   const { locations, user, price, status } = booking ?? {};
+  useEffect(() => {
+    if (loadCurStatus === "error") {
+      navigation.goBack();
+      showNativeAlert("Không có chuyến đi nào hiện tại");
+    }
+  }, [booking, loadCurStatus, navigation]);
   useEffect(() => {
     if (!location) return;
     emit("driver/update-location", location);
@@ -49,9 +57,12 @@ const CurrentBooking = ({}: CurrentBookingProps) => {
     return () => clearTimeout(sto);
   }, [locations]);
   useEffect(() => {
-    if (checked) startLocation();
+    const to = setTimeout(() => {
+      startLocation().catch(() => {});
+    }, 500);
     return () => {
-      if (checked) stopLocation();
+      clearTimeout(to);
+      stopLocation().catch(() => {});
     };
   }, [checked, startLocation, stopLocation]);
   useEffect(() => {
@@ -64,6 +75,7 @@ const CurrentBooking = ({}: CurrentBookingProps) => {
       });
     }
   }, [booking]);
+  if (!booking) return null;
   return (
     <View style={styles.container}>
       <View style={{ position: "absolute", top: 10, right: 10, zIndex: 999 }}>
@@ -145,19 +157,40 @@ const CurrentBooking = ({}: CurrentBookingProps) => {
           ></Marker>
         )}
       </MapView>
-      <View style={{ height: 400, paddingTop: 10 }}>
-        <View style={{ padding: 15 }}>
-          <Text style={{ color: COLOR.secondary }}>Hành khách</Text>
-          <Text style={{ fontWeight: "500", fontSize: 18 }}>
-            {user?.fullName}
+      <View
+        style={{
+          paddingVertical: 10,
+          gap: 10,
+          borderWidth: 0.5,
+          borderColor: COLOR.secondaryBackground,
+        }}
+      >
+        <View style={{ paddingHorizontal: 15 }}>
+          <Text
+            style={{
+              fontWeight: "500",
+              color: COLOR.secondary,
+              marginBottom: 10,
+            }}
+          >
+            Thông tin người đặt
           </Text>
+          <UserInfo userProps={user ?? undefined} />
         </View>
         <Divider
           width={1}
           style={{ opacity: 0.3, backgroundColor: COLOR.secondaryBackground }}
         />
-        <View style={{ padding: 15 }}>
-          <Text style={{ color: COLOR.secondary }}>Điểm đến tiếp theo</Text>
+        <View style={{ paddingHorizontal: 15 }}>
+          <Text
+            style={{
+              fontWeight: "500",
+              color: COLOR.secondary,
+              marginBottom: 10,
+            }}
+          >
+            Điểm đến tiếp theo
+          </Text>
           <View style={{ flexDirection: "row" }}>
             <View style={{ paddingRight: 10 }}>
               <Image
@@ -175,38 +208,40 @@ const CurrentBooking = ({}: CurrentBookingProps) => {
             </View>
           </View>
         </View>
-        <View style={{ padding: 15, flexDirection: "row", gap: 10 }}>
+        <View
+          style={{
+            paddingHorizontal: 15,
+            flexDirection: "row",
+            gap: 10,
+          }}
+        >
           <Badge
-            bg={"#ffffffff"}
-            title={`${price ? price.toLocaleString("vi-VN") : ""}đ`}
+            type="primary"
+            value={"Tiền mặt"}
+            containerStyle={{ paddingVertical: 5, paddingHorizontal: 12 }}
+            textStyle={{ fontSize: 20 }}
           />
           <Badge
-            bg={"#dcdcdcff"}
-            title={"Tiền mặt"}
-          />
-          <Badge
-            bg={"#ffe75d"}
-            title={"Khuyến mãi"}
+            type="warning"
+            value={`${
+              price
+                ? price.toLocaleString("vi", {
+                    currency: "VND",
+                    style: "currency",
+                  })
+                : ""
+            }`}
+            containerStyle={{ paddingVertical: 5, paddingHorizontal: 12 }}
+            textStyle={{ fontSize: 20 }}
           />
         </View>
         <Divider
           width={1}
-          style={{ opacity: 0.3, backgroundColor: COLOR.secondaryBackground }}
+          style={{
+            opacity: 0.3,
+            backgroundColor: COLOR.secondaryBackground,
+          }}
         />
-        <View style={{ padding: 15, flexDirection: "row" }}>
-          <Button
-            containerStyle={{ flex: 1 }}
-            type="clear"
-          >
-            Nhắn tin
-          </Button>
-          <Button
-            containerStyle={{ flex: 1 }}
-            type="clear"
-          >
-            Gọi điện
-          </Button>
-        </View>
         <View style={{ paddingHorizontal: 15 }}>
           <Button
             size="lg"

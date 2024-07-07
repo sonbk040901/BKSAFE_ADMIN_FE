@@ -1,6 +1,6 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { User } from "../../api";
-import { RootState } from "../store";
+import { type RootState } from "../store";
 
 interface UserState {
   id?: number;
@@ -41,6 +41,6 @@ const userSlice = createSlice({
 });
 
 export const { patchUserId, patchUserInfo } = userSlice.actions;
-export const selectDriver = (state: RootState) => state.user;
+export const selectUser = (state: RootState) => state.user;
 
 export default userSlice.reducer;

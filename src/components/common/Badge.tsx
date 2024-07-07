@@ -1,9 +1,16 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import {
+  StyleProp,
+  StyleSheet,
+  Text,
+  TextStyle,
+  View,
+  ViewStyle,
+} from "react-native";
 import { COLOR } from "../../constants/color";
 
 interface BadgeProps {
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   type?:
     | "success"
     | "warning"
@@ -15,10 +22,18 @@ interface BadgeProps {
     | "primary";
   value: string;
   fullFill?: boolean;
+  containerStyle?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
 }
 
 const Badge = (props: BadgeProps) => {
-  const { type = "success", value, fullFill } = props;
+  const {
+    type = "success",
+    value,
+    fullFill,
+    containerStyle,
+    textStyle,
+  } = props;
   const style = badgeStyle[type][fullFill ? "fullFill" : "default"];
   return (
     <View
@@ -29,16 +44,20 @@ const Badge = (props: BadgeProps) => {
           borderColor: style.color,
           borderWidth: 0.3,
         },
+        containerStyle,
       ]}
     >
       <Text
-        style={{
-          color: style.color,
-          fontWeight: "500",
-          paddingHorizontal: 4,
-          paddingVertical: 1,
-          fontSize: 12,
-        }}
+        style={[
+          {
+            color: style.color,
+            fontWeight: "500",
+            paddingHorizontal: 4,
+            paddingVertical: 1,
+            fontSize: 12,
+          },
+          textStyle,
+        ]}
       >
         {value}
       </Text>

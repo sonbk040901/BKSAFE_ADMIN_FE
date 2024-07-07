@@ -10,6 +10,7 @@ import { useInitAppContext } from "../../hook/useInitApp";
 import useLocation from "../../hook/useLocation";
 import { emit, subcribe } from "../../socket";
 import type { AppNavigationProp } from "../../types/navigation";
+import UserDetailModal from "../../components/common/UserDetailModal";
 interface HomeProps {
   navigation: AppNavigationProp;
 }
@@ -45,7 +46,7 @@ const Home: FC<HomeProps> = ({ navigation }) => {
     <AppWrapper>
       <View style={styles.container}>
         <Card style={styles.card}>
-          <Text style={styles.cardTitle}>Xin chào, {data?.fullName}!</Text>
+          <Text style={styles.cardTitle}>Xin chào, tài xế {data?.fullName}!</Text>
           <View style={styles.cardContent}>
             <Text style={styles.text}>Bạn muốn kiếm thêm thu nhập?</Text>
             <Text style={styles.text}>Hãy sử dụng BKSafe dành cho tài xế!</Text>
@@ -118,6 +119,7 @@ const Home: FC<HomeProps> = ({ navigation }) => {
           </MapView>
         </Card>
       </View>
+      <UserDetailModal />
       <Hotline />
     </AppWrapper>
   );
