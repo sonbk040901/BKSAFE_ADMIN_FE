@@ -1,23 +1,22 @@
 import { StatusBar } from "expo-status-bar";
 import React, { FC, PropsWithChildren } from "react";
-import { KeyboardAvoidingView, Platform, StyleSheet } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { StyleSheet, View } from "react-native";
 
 interface AuthWrapperProps extends PropsWithChildren {}
 
 const AuthWrapper: FC<AuthWrapperProps> = ({ children }) => {
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <StatusBar />
-      <KeyboardAvoidingView
-        behavior={Platform.OS == "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS == "ios" ? 0 : 20}
-        enabled={Platform.OS === "ios" ? true : false}
-        style={styles.container}
+      <View
+        style={{
+          justifyContent: "center",
+          height: "100%",
+        }}
       >
         {children}
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+      </View>
+    </View>
   );
 };
 
@@ -27,5 +26,6 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "white",
     flex: 1,
+    paddingVertical: 20,
   },
 });

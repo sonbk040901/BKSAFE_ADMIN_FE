@@ -97,3 +97,28 @@ export interface Chat {
   driver: Driver;
   isDriver: boolean;
 }
+
+export interface Cccd {
+  id: number;
+  frontImage: string;
+  backImage: string;
+  fullName: string;
+  number: string;
+  address: string;
+  birthday: string;
+  issueDate: string;
+  expireDate: string;
+}
+
+export interface License {
+  id: number;
+  frontImage: string;
+  backImage: string;
+  number: string;
+  fullName: string;
+  address: string;
+  birthday: string;
+  issueDate: string;
+  expireDate: string;
+  classType: string;
+}

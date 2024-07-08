@@ -1,16 +1,23 @@
 import instance from "./axios";
 import * as storage from "../utils/storage";
-import { Account } from "./types";
+import { Account, Cccd, License } from "./types";
 export interface LoginDTO {
   phone: string;
   password: string;
 }
 export interface SignupDTO {
-  username: string;
   password: string;
   email: string;
   fullName: string;
   phone: string;
+  address?: string;
+  birthday?: Date;
+  cccd: Omit<Cccd, "id">;
+  license: Omit<License, "id">;
+}
+export interface ActiveDTO {
+  phone: string;
+  activationCode: string;
 }
 
 export const login = async (login: LoginDTO) => {
@@ -20,8 +27,12 @@ export const login = async (login: LoginDTO) => {
   storage.storeData("token", token);
   return token;
 };
+export const active = async (active: ActiveDTO) => {
+  const path = "auth/active";
+  await instance.patch(path, active);
+};
 export const signup = async (signup: SignupDTO) => {
-  const path = "auth/signup";
+  const path = "auth/register";
   await instance.post(path, signup);
 };
 export const logout = async () => {
