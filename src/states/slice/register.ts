@@ -57,7 +57,7 @@ const initialState: RegisterState = {
 };
 
 const registerSlice = createSlice({
-  name: "profile",
+  name: "register",
   initialState,
   reducers: {
     patchRegister: (state, action: PayloadAction<Partial<RegisterState>>) => {
