@@ -65,6 +65,7 @@ export interface Booking {
   userId: number;
   note: string;
   rating: number | null;
+  review: string | null;
   startTime: string | null;
   endTime: string | null;
   nextLocationId: number | null;

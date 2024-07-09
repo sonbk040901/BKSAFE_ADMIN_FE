@@ -1,36 +1,43 @@
-import { Button, Divider, Icon } from "@rneui/themed";
+import { Button, Divider } from "@rneui/themed";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { FC, useCallback, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
+import MapView, { Marker } from "react-native-maps";
+import MapViewDirections from "react-native-maps-directions";
+import Animated from "react-native-reanimated";
 import { ggMapApi } from "../api";
-import { AutoCompleteResultType } from "../api/ggmap";
+import { AutoCompleteResultType, getApiKey } from "../api/ggmap";
 import { useBookingReceive } from "../api/hook";
 import useBookingAction from "../api/hook/useBookingAction";
 import Badge from "../components/common/Badge";
-import { COLOR, STYLE } from "../constants";
-import { AppNavigationProp } from "../types/navigation";
+import { COLOR, IMAGE, STYLE } from "../constants";
+import {
+  AppNavigationProp,
+  BookingReceiveRouteProp,
+} from "../types/navigation";
 interface BookingReceiveProps {
   navigation: AppNavigationProp;
+  route: BookingReceiveRouteProp;
 }
-const toKVND = (price: number) => {
-  return parseInt((price / 1000).toFixed(0)).toLocaleString("vi-VN");
-};
-
 const BookingReceive: FC<BookingReceiveProps> = (props) => {
-  const { navigation } = props;
+  const { navigation, route } = props;
   const { booking } = useBookingReceive();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { currentLocation } = route.params;
+  const [distanceInfo, setDistanceInfo] = useState<{
+    distance: number;
+    duration: number;
+  }>();
   const [countdown, setCountdown] = useState(20);
   const [locations, setLocations] =
     useState<AutoCompleteResultType["predictions"]>();
   const { mutateAsync: bookingAction } = useBookingAction({});
+  const mapRef = useRef<MapView>(null);
   const handleBack = useCallback(() => {
     if (!booking) return;
     bookingAction({
@@ -75,6 +82,22 @@ const BookingReceive: FC<BookingReceiveProps> = (props) => {
       clearInterval(interval);
     };
   }, [handleBack]);
+  useEffect(() => {
+    const locations = booking?.locations;
+    if (!locations || locations.length === 0) return;
+    const sto = setTimeout(() => {
+      mapRef.current?.fitToCoordinates(locations, {
+        edgePadding: {
+          top: 80 + 10 * locations.length,
+          right: 30,
+          bottom: 30,
+          left: 30,
+        },
+        animated: true,
+      });
+    }, 300);
+    return () => clearTimeout(sto);
+  }, [booking?.locations]);
   if (!booking)
     return (
       <View
@@ -97,33 +120,88 @@ const BookingReceive: FC<BookingReceiveProps> = (props) => {
       start={{ x: 0.3, y: 0 }}
       style={styles.container}
     >
-      <View style={styles.top}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={handleBack}>
-            <Icon
-              name="cancel"
-              size={30}
-              color={COLOR.white}
-              selectable
-            />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.priceContainer}>
-          <Text style={styles.currency}>VND</Text>
-          <Text style={[styles.price, STYLE.shadow]}>
-            {toKVND(booking.price)} K
-          </Text>
-          <View style={styles.badges}>
-            <Badge
-              value="Tiền mặt"
-              type="warning"
-            />
-          </View>
-          <View style={{ paddingTop: 10 }}>
-            <Text>Ghi chú: bla bla</Text>
-          </View>
-        </View>
-      </View>
+      <MapView
+        ref={mapRef}
+        camera={{
+          center: {
+            latitude: 21.007326,
+            longitude: 105.847328,
+          },
+          pitch: 0,
+          heading: 0,
+          altitude: 0,
+          zoom: 12,
+        }}
+        style={{ height: 450 }}
+      >
+        <MapViewDirections
+          apikey={getApiKey()}
+          region="vn"
+          language="vi"
+          timePrecision="now"
+          origin={booking.locations[0]}
+          destination={booking.locations[booking.locations.length - 1]}
+          strokeWidth={3}
+          strokeColor={COLOR.primary}
+          waypoints={booking.locations.slice(1, booking.locations.length - 1)}
+          geodesic
+          mode="DRIVING"
+        />
+
+        <Marker
+          coordinate={currentLocation}
+          title="Vị trí của bạn"
+          description="Đây là vị trí hiện tại của bạn"
+        >
+          <Animated.Image
+            source={IMAGE.driverPin}
+            style={{ width: 30, height: 30 }}
+            resizeMode="contain"
+          />
+        </Marker>
+        <MapViewDirections
+          apikey={getApiKey()}
+          region="vn"
+          language="vi"
+          timePrecision="now"
+          origin={currentLocation}
+          destination={booking.locations[0]}
+          strokeWidth={3}
+          strokeColor={COLOR.warning}
+          geodesic
+          mode="DRIVING"
+          onReady={(res) => setDistanceInfo(res)}
+        />
+
+        {booking.locations?.map((p, i) => {
+          const { address, ...location } = p;
+          const source =
+            i == 0
+              ? IMAGE.userPin
+              : i == booking.locations.length - 1
+              ? IMAGE.homePin
+              : IMAGE.downPin;
+          const title =
+            i == 0
+              ? "Điểm đón"
+              : i == booking.locations.length - 1
+              ? "Điểm đến"
+              : "Điểm dừng";
+          return (
+            <Marker
+              key={address}
+              coordinate={location}
+              title={title}
+            >
+              <Animated.Image
+                source={source}
+                style={{ width: 35, height: 35 }}
+                resizeMode="contain"
+              />
+            </Marker>
+          );
+        })}
+      </MapView>
       <LinearGradient
         colors={[
           "#95c6ff1a",
@@ -144,19 +222,22 @@ const BookingReceive: FC<BookingReceiveProps> = (props) => {
               justifyContent: "space-between",
             }}
           >
-            <Text style={styles.distance}>Cách bạn 0.03 km</Text>
-            <Button type="clear">
-              Xem trên bản đồ {""}
+            <Text style={styles.distance}>
+              Cách bạn {distanceInfo?.distance.toFixed(2)} km (khoảng{" "}
+              {distanceInfo?.duration.toFixed(0)} phút)
+            </Text>
+            {/* <Button type="clear">
+              Xem trên bản đồ{" "}
               <Icon
                 name="map"
                 size={20}
                 color={COLOR.primary}
               />
-            </Button>
+            </Button> */}
           </View>
           <ScrollView
             style={{
-              paddingTop: 20,
+              paddingTop: 5,
               height: 200,
               overflow: "hidden",
             }}
@@ -189,30 +270,65 @@ const BookingReceive: FC<BookingReceiveProps> = (props) => {
             )}
           </ScrollView>
         </View>
-        <Button
-          containerStyle={styles.confirmBtn}
-          size="lg"
-          onPress={handleAccept}
-        >
-          Chấp nhận
-          <View style={styles.countdown}>
-            <Text
-              style={[
-                styles.countdownText,
-                {
-                  color:
-                    countdown < 10
-                      ? countdown < 6
-                        ? "#ff6060"
-                        : "#ffb060"
-                      : "white",
-                },
-              ]}
-            >
-              {countdown}
+        <View style={{ marginBottom: 10, gap: 5 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+            <Text style={[styles.price, STYLE.shadow]}>
+              Giá:{" "}
+              {booking.price.toLocaleString("vi", {
+                style: "currency",
+                currency: "VND",
+              })}
+            </Text>
+            <Badge
+              value="Tiền mặt"
+              type="warning"
+            />
+          </View>
+          <View style={{}}>
+            <Text style={{ fontWeight: "500", color: COLOR.secondary }}>
+              Ghi chú: {booking.note ? booking.note : "Không có"}
             </Text>
           </View>
-        </Button>
+        </View>
+        <View style={{ flexDirection: "row", gap: 10 }}>
+          <Button
+            containerStyle={{
+              flex: 1,
+              borderWidth: 0.4,
+              borderColor: COLOR.error,
+            }}
+            buttonStyle={{ backgroundColor: COLOR.errorBackground }}
+            titleStyle={{ color: COLOR.error }}
+            size="lg"
+            onPress={handleBack}
+          >
+            Từ chối
+          </Button>
+          <Button
+            containerStyle={styles.confirmBtn}
+            size="lg"
+            onPress={handleAccept}
+          >
+            Chấp nhận
+            <View style={styles.countdown}>
+              <Text
+                style={[
+                  styles.countdownText,
+                  {
+                    color:
+                      countdown < 10
+                        ? countdown < 6
+                          ? "#ff6060"
+                          : "#ffb060"
+                        : "white",
+                  },
+                ]}
+              >
+                {countdown}
+              </Text>
+            </View>
+          </Button>
+        </View>
       </LinearGradient>
     </LinearGradient>
   );
@@ -243,33 +359,37 @@ const styles = StyleSheet.create({
   },
   price: {
     color: COLOR.dark,
-    fontSize: 60,
-    fontWeight: "500",
+    fontSize: 25,
+    fontWeight: "600",
   },
   badges: {
     flexDirection: "row",
     gap: 10,
   },
   bottom: {
-    flex: 7,
+    flex: 1,
     backgroundColor: COLOR.white,
     padding: 15,
+    paddingTop: 10,
     flexDirection: "column",
-    borderTopRightRadius: 15,
-    borderTopLeftRadius: 15,
   },
   distance: {
     color: COLOR.secondary,
-    fontSize: 15,
+    fontSize: 13,
     fontWeight: "500",
+    paddingVertical: 2,
   },
   locationList: {
     flex: 1,
   },
-  confirmBtn: {},
+  confirmBtn: {
+    flex: 2,
+    borderWidth: 0.4,
+    borderColor: COLOR.primary,
+  },
   countdown: {
     position: "absolute",
-    right: 30,
+    right: 18,
     backgroundColor: "#bdbdbd3f",
     width: 30,
     height: 30,

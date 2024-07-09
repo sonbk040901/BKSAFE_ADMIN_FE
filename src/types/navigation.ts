@@ -6,7 +6,9 @@ export type RootNavigationParamList = {
   App: undefined;
   Map: undefined;
   Auth: undefined;
-  BookingReceive: undefined;
+  BookingReceive: {
+    currentLocation: { latitude: number; longitude: number };
+  };
   CurrentBooking: undefined;
   DetailChat: { userId: number };
   Chat: undefined;
@@ -41,3 +43,7 @@ export type DetailHistoryRouteProp = RouteProp<
   "HistoryDetail"
 >;
 export type ActiveRouteProp = RouteProp<AuthNavigationParamList, "Active">;
+export type BookingReceiveRouteProp = RouteProp<
+  RootNavigationParamList,
+  "BookingReceive"
+>;

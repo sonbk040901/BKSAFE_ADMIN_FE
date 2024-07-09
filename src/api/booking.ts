@@ -39,6 +39,11 @@ export const getCurrentBooking = async () => {
   const res = await instance.get<Booking>(path);
   return res.data;
 };
+export const checkCurrentBooking = async () => {
+  const path = "bookings/current/check";
+  const res = await instance.get<boolean>(path);
+  return res.data;
+};
 export const acceptBooking = async (id: number) => {
   const path = `bookings/${id}/accept`;
   const res = await instance.patch(path);

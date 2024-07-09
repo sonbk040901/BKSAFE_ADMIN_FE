@@ -2,15 +2,16 @@ import { Button, Switch, Text } from "@rneui/themed";
 import React, { FC, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
-import { driverApi } from "../../api";
+import { bookingApi, driverApi } from "../../api";
 import AppWrapper from "../../components/AppWrapper";
 import Card from "../../components/Card";
+import UserDetailModal from "../../components/common/UserDetailModal";
 import Hotline from "../../components/home/Hotline";
 import { useInitAppContext } from "../../hook/useInitApp";
 import useLocation from "../../hook/useLocation";
 import { emit, subcribe } from "../../socket";
 import type { AppNavigationProp } from "../../types/navigation";
-import UserDetailModal from "../../components/common/UserDetailModal";
+import { showNativeAlert } from "../../utils/alert";
 interface HomeProps {
   navigation: AppNavigationProp;
 }
@@ -32,6 +33,14 @@ const Home: FC<HomeProps> = ({ navigation }) => {
   const handleToggleReceiveBooking = () => {
     setReceiveBooking((prev) => !prev);
   };
+  const handleNavigateCurrent = async () => {
+    const isExist = await bookingApi.checkCurrentBooking();
+    if (!isExist) {
+      showNativeAlert("Không có chuyến đi nào");
+      return;
+    }
+    navigation.push("CurrentBooking");
+  };
   useEffect(() => {
     if (!location) return;
     emit("driver/update-location", location);
@@ -40,13 +49,18 @@ const Home: FC<HomeProps> = ({ navigation }) => {
     driverApi.updateStatus(receiveBooking ? "AVAILABLE" : "BUSY");
   }, [receiveBooking]);
   useEffect(() => {
-    return subcribe("booking/suggest", () => navigation.push("BookingReceive"));
-  }, [navigation]);
+    if (!location) return;
+    return subcribe("booking/suggest", () =>
+      navigation.push("BookingReceive", { currentLocation: location }),
+    );
+  }, [location, navigation]);
   return (
     <AppWrapper>
       <View style={styles.container}>
         <Card style={styles.card}>
-          <Text style={styles.cardTitle}>Xin chào, tài xế {data?.fullName}!</Text>
+          <Text style={styles.cardTitle}>
+            Xin chào, tài xế {data?.fullName}!
+          </Text>
           <View style={styles.cardContent}>
             <Text style={styles.text}>Bạn muốn kiếm thêm thu nhập?</Text>
             <Text style={styles.text}>Hãy sử dụng BKSafe dành cho tài xế!</Text>
@@ -75,7 +89,7 @@ const Home: FC<HomeProps> = ({ navigation }) => {
             />
           </View>
           <View style={{ gap: 20 }}>
-            <Button onPress={() => navigation.push("CurrentBooking")}>
+            <Button onPress={handleNavigateCurrent}>
               Xem chuyến đi hiện tại
             </Button>
           </View>

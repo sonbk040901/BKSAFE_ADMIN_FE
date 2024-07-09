@@ -5,6 +5,7 @@ export const IMAGE = {
   pin: require("../assets/images/pin.png"),
   location: require("../assets/images/location.png"),
   driverPin: require("../assets/images/driver-pin.png"),
+  userPin: require("../assets/images/user-pin.png"),
   homePin: require("../assets/images/home-pin.png"),
   downPin: require("../assets/images/down-pin.png"),
   hotline: require("../assets/images/hotline.png"),
