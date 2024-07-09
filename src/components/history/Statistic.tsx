@@ -24,7 +24,7 @@ const Statistic = (props: StatisticProps) => {
         }}
       >
         <Text style={{ fontSize: 18, fontWeight: "bold" }}>
-          Tổng thanh toán
+          Tổng doanh thu
         </Text>
         <Text
           style={{
@@ -65,7 +65,7 @@ const Statistic = (props: StatisticProps) => {
             count={completedTravle}
           />
           <StatisticItem
-            title="Chuyến hủy"
+            title="Chuyến bị hủy"
             count={canceledTravle}
           />
         </View>

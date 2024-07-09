@@ -36,13 +36,18 @@ const History: FC<HistoryProps> = ({ navigation }) => {
     [filter],
   );
   const statistic = useMemo(() => {
+    const completedTravle = bookings.filter(
+      (item) => item.status === "COMPLETED",
+    );
+    const canceledBookings = bookings.filter(
+      (item) => item.status === "CANCELLED",
+    );
+    const totalPrice = completedTravle.reduce((a, b) => a + b.price, 0);
     return {
-      totalPrice: bookings.reduce((a, b) => a + b.price, 0),
+      totalPrice,
       totalTravle: bookings.length,
-      completedTravle: bookings.filter((item) => item.status === "COMPLETED")
-        .length,
-      canceledTravle: bookings.filter((item) => item.status === "CANCELLED")
-        .length,
+      completedTravle: completedTravle.length,
+      canceledTravle: canceledBookings.length,
     };
   }, [bookings]);
   return (

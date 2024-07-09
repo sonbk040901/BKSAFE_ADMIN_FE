@@ -15,7 +15,7 @@ export const connect = async (path: string = "") => {
 };
 type EventsMapping = {
   booking: {
-    subcribe: "suggest";
+    subcribe: "suggest" | "current-status";
     emit: never;
   };
   driver: {

@@ -148,7 +148,7 @@ const BookingReceive: FC<BookingReceiveProps> = (props) => {
           mode="DRIVING"
         />
 
-        <Marker
+        {<Marker
           coordinate={currentLocation}
           title="Vị trí của bạn"
           description="Đây là vị trí hiện tại của bạn"
@@ -158,7 +158,7 @@ const BookingReceive: FC<BookingReceiveProps> = (props) => {
             style={{ width: 30, height: 30 }}
             resizeMode="contain"
           />
-        </Marker>
+        </Marker>}
         <MapViewDirections
           apikey={getApiKey()}
           region="vn"

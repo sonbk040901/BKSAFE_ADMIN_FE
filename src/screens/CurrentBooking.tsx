@@ -5,7 +5,7 @@ import { StyleSheet, Text, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 import Animated from "react-native-reanimated";
-import { ggMapApi } from "../api";
+import { BookingStatus, ggMapApi } from "../api";
 import { AutoCompleteResultType, getApiKey } from "../api/ggmap";
 import useBookingAction from "../api/hook/useBookingAction";
 import useCurrentBooking from "../api/hook/useCurrentBooking";
@@ -13,7 +13,7 @@ import Badge from "../components/common/Badge";
 import UserInfo from "../components/home/UserInfo";
 import { COLOR, IMAGE } from "../constants";
 import useLocation from "../hook/useLocation";
-import { emit } from "../socket";
+import { emit, subcribe } from "../socket";
 import { AppNavigationProp } from "../types/navigation";
 import { showAlert, showNativeAlert } from "../utils/alert";
 interface CurrentBookingProps {
@@ -57,12 +57,13 @@ const CurrentBooking = ({}: CurrentBookingProps) => {
     return () => clearTimeout(sto);
   }, [locations]);
   useEffect(() => {
+    if (!checked) return;
     const to = setTimeout(() => {
-      startLocation().catch(() => {});
+      startLocation();
     }, 500);
     return () => {
       clearTimeout(to);
-      stopLocation().catch(() => {});
+      if (checked) stopLocation();
     };
   }, [checked, startLocation, stopLocation]);
   useEffect(() => {
@@ -75,6 +76,14 @@ const CurrentBooking = ({}: CurrentBookingProps) => {
       });
     }
   }, [booking]);
+  useEffect(() => {
+    subcribe("booking/current-status", (status: BookingStatus) => {
+      if (status === "CANCELLED") {
+        // navigation.goBack();
+        showAlert("Chuyến đi đã bị hủy", "Chuyến đi đã bị hủy bởi khách hàng");
+      }
+    });
+  }, [navigation]);
   if (!booking) return null;
   return (
     <View style={styles.container}>

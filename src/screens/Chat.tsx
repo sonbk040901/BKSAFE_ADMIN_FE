@@ -61,10 +61,10 @@ const Chat: FC<ChatProps> = ({ navigation }) => {
             style={{ color: COLOR.secondary, flex: 1 }}
             numberOfLines={1}
           >
-            {!item.isDriver && <Text style={{ fontWeight: "600" }}>Bạn: </Text>}
+            {item.isDriver && <Text style={{ fontWeight: "600" }}>Bạn: </Text>}
             {item.message}
           </Text>
-          <View
+          {/* <View
             style={{
               width: 20,
               height: 20,
@@ -77,7 +77,7 @@ const Chat: FC<ChatProps> = ({ navigation }) => {
             <Text style={{ color: "white", fontWeight: "bold", fontSize: 13 }}>
               5
             </Text>
-          </View>
+          </View> */}
         </View>
       </View>
     </TouchableOpacity>

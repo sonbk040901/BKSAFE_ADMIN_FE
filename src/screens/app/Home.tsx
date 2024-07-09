@@ -18,20 +18,10 @@ interface HomeProps {
 const Home: FC<HomeProps> = ({ navigation }) => {
   const { data } = useInitAppContext();
   const [checked, setChecked] = useState(false);
-  const [receiveBooking, setReceiveBooking] = useState(false);
   const { location, startLocation, stopLocation, setLocation } =
     useLocation("home");
-  const handleToggleLocation = () => {
-    if (checked) {
-      stopLocation();
-      setChecked(false);
-      return;
-    }
-    startLocation();
-    setChecked(true);
-  };
   const handleToggleReceiveBooking = () => {
-    setReceiveBooking((prev) => !prev);
+    setChecked((prev) => !prev);
   };
   const handleNavigateCurrent = async () => {
     const isExist = await bookingApi.checkCurrentBooking();
@@ -46,14 +36,18 @@ const Home: FC<HomeProps> = ({ navigation }) => {
     emit("driver/update-location", location);
   }, [location]);
   useEffect(() => {
-    driverApi.updateStatus(receiveBooking ? "AVAILABLE" : "BUSY");
-  }, [receiveBooking]);
+    driverApi.updateStatus(checked ? "AVAILABLE" : "BUSY");
+    if (!checked) startLocation();
+    else stopLocation();
+  }, [checked, startLocation, stopLocation]);
   useEffect(() => {
     if (!location) return;
-    return subcribe("booking/suggest", () =>
-      navigation.push("BookingReceive", { currentLocation: location }),
+    stopLocation()
+    return subcribe(
+      "booking/suggest",
+      () => navigation.push("BookingReceive", { currentLocation: location }),
     );
-  }, [location, navigation]);
+  }, [location, navigation, stopLocation]);
   return (
     <AppWrapper>
       <View style={styles.container}>
@@ -77,14 +71,14 @@ const Home: FC<HomeProps> = ({ navigation }) => {
           >
             <View>
               <Text style={{ fontWeight: "bold", fontSize: 22 }}>
-                Tài xế đang {receiveBooking ? "rảnh" : "bận"}
+                Tài xế đang {checked ? "rảnh" : "bận"}
               </Text>
               <Text style={{ fontWeight: "500", fontSize: 20 }}>
-                {receiveBooking ? "Sẵn sàng" : "Không"} nhận đặt tài xế
+                {checked ? "Sẵn sàng" : "Không"} nhận đặt tài xế
               </Text>
             </View>
             <Switch
-              value={receiveBooking}
+              value={checked}
               onValueChange={handleToggleReceiveBooking}
             />
           </View>
@@ -97,10 +91,6 @@ const Home: FC<HomeProps> = ({ navigation }) => {
         <Card style={{ marginTop: 15 }}>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <Text>{checked ? "Tắt" : "Bật"} chia sẻ vị trí</Text>
-            <Switch
-              value={checked}
-              onValueChange={handleToggleLocation}
-            />
           </View>
           <MapView
             style={{ height: 200 }}

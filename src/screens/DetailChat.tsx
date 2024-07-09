@@ -70,7 +70,7 @@ const DetailChat: FC<DetailChatProps> = (props) => {
           onPress={() => navigation.goBack()}
         />
         <Image
-          src={driver.avatar ?? undefined}
+          src={user.avatar ?? undefined}
           style={{ width: 50, height: 50, borderRadius: 35, marginRight: 10 }}
         />
         <View>
@@ -92,7 +92,7 @@ const DetailChat: FC<DetailChatProps> = (props) => {
         placeholder="Nhập tin nhắn..."
         showUserAvatar={false}
         showAvatarForEveryMessage={false}
-        user={mappingAcc(user)}
+        user={mappingAcc(driver)}
         renderSend={(props) => {
           return (
             <Send {...props}>
@@ -169,14 +169,14 @@ const mappingChat = (
         _id: chat.id,
         text: chat.message,
         createdAt: new Date(chat.createdAt),
-        user: mappingAcc(chat.isDriver ? user : driver),
+        user: mappingAcc(chat.isDriver ? driver : user),
       } as IMessage),
   );
 };
 
 const mappingAcc = (acc: Account): User => {
   return {
-    _id: acc.id,
+    _id: `${acc.id}${acc.phone}`,
     name: acc.fullName,
     avatar: acc.avatar ?? undefined,
   };
