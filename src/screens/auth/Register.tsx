@@ -1,5 +1,6 @@
+import { useNavigation } from "@react-navigation/native";
 import React, { PropsWithChildren, useEffect, useRef } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, TextInput, View } from "react-native";
 import { SceneMap, TabView } from "react-native-tab-view";
 import AuthWrapper from "../../components/AuthWrapper";
 import CccdTab from "../../components/register/CccdTab";
@@ -7,9 +8,8 @@ import InfoTab from "../../components/register/InfoTab";
 import LicenseTab from "../../components/register/LicenseTab";
 import { useAppDispatch, useAppSelector } from "../../states";
 import { patchRegister, selectRegister } from "../../states/slice/register";
-import { showAlert } from "../../utils/alert";
 import { AuthNavigationProp } from "../../types/navigation";
-import { useNavigation } from "@react-navigation/native";
+import { showAlert } from "../../utils/alert";
 const renderScene = SceneMap({
   info: InfoTab,
   cccd: CccdTab,
@@ -39,17 +39,7 @@ const Register = () => {
   return (
     <AuthWrapper>
       <View style={styles.container}>
-        <Text
-          style={{
-            fontWeight: "bold",
-            fontSize: 30,
-            textAlign: "center",
-            paddingVertical: 20,
-          }}
-        >
-          Đăng ký tài khoản
-        </Text>
-        <View style={{ height: 700, width: "100%" }}>
+        <View style={{ height: 670, width: "100%" }}>
           <TabView
             navigationState={{
               index: tab,

@@ -1,14 +1,18 @@
+import { Button } from "@rneui/themed";
 import React, { type FC } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { View } from "react-native";
 import { useAppDispatch, useAppSelector } from "../../states";
 import {
+  RegisterState,
   patchRegister,
   patchRegisterCccd,
   selectRegisterCccd,
 } from "../../states/slice/register";
-import * as ImagePicker from "expo-image-picker";
-import { Button, Image, Input } from "@rneui/themed";
-import { COLOR, IMAGE } from "../../constants";
+import CustomDateInput from "../common/CustomDateInput";
+import CustomInput from "../common/CustomInput";
+import Icon from "../common/Icon";
+import SelectImage from "../common/SelectImg";
+import Title from "./Title";
 
 interface CccdTabProps {}
 
@@ -16,287 +20,69 @@ const CccdTab: FC<CccdTabProps> = () => {
   const { backImageSource, frontImageSource } =
     useAppSelector(selectRegisterCccd);
   const dispatch = useAppDispatch();
+  const handleChange =
+    (key: keyof RegisterState["cccd"]) => (value: string) => {
+      dispatch(patchRegisterCccd({ [key]: value }));
+    };
   return (
-    <View style={{ width: "100%", alignItems: "center" }}>
-      <Text
-        style={{
-          fontWeight: "500",
-          color: COLOR.secondary,
-          marginBottom: 10,
-          width: "100%",
-          paddingHorizontal: 10,
-        }}
-      >
-        Thông tin CCCD/CMND
-      </Text>
-      <View style={{ flexDirection: "row", marginBottom: 10 }}>
-        <TouchableOpacity
-          style={{ flex: 1, alignItems: "center" }}
-          onPress={async () => {
-            const res = await ImagePicker.launchImageLibraryAsync({
-              mediaTypes: ImagePicker.MediaTypeOptions.Images,
-              base64: true,
-              quality: 0.5,
-            });
-            const uri = res.assets?.[0].uri;
-            if (!uri) return;
+    <View
+      style={{
+        paddingHorizontal: 10,
+      }}
+    >
+      <Title title="Thông tin CCCD/CMND" />
+      <View style={{ flexDirection: "row", gap: 10 }}>
+        <SelectImage
+          source={frontImageSource}
+          label="Ảnh mặt trước"
+          onChange={(img) => {
             dispatch(
-              patchRegisterCccd({
-                frontImageSource: res.assets?.[0],
-                frontImage: uri,
-              }),
+              patchRegisterCccd({ frontImageSource: img, frontImage: img.uri }),
             );
           }}
-        >
-          <Image
-            style={{
-              height: 100,
-              width: "100%",
-              borderRadius: 10,
-              objectFit: "cover",
-              borderWidth: 0.4,
-              borderColor: COLOR.secondaryBackground,
-            }}
-            containerStyle={{
-              height: 100,
-              width: "90%",
-            }}
-            source={frontImageSource ?? undefined}
-          />
-          <View
-            style={{
-              position: "absolute",
-              width: "90%",
-              height: "100%",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Text
-              style={{
-                color: COLOR.white,
-                fontWeight: "600",
-                textShadowColor: COLOR.dark,
-                textShadowOffset: { width: 1, height: 1 },
-                textShadowRadius: 1,
-              }}
-            >
-              Ảnh mặt trước
-            </Text>
-            <Image
-              source={IMAGE.camera}
-              style={{ width: 30, height: 30 }}
-            />
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{ flex: 1, alignItems: "center" }}
-          onPress={async () => {
-            const res = await ImagePicker.launchImageLibraryAsync({
-              mediaTypes: ImagePicker.MediaTypeOptions.Images,
-              base64: true,
-              quality: 0.5,
-            });
-            const uri = res.assets?.[0].uri;
-            if (!uri) return;
+        />
+        <SelectImage
+          source={backImageSource}
+          label="Ảnh mặt sau"
+          onChange={(img) => {
             dispatch(
-              patchRegisterCccd({
-                backImageSource: res.assets?.[0],
-                backImage: uri,
-              }),
+              patchRegisterCccd({ backImageSource: img, backImage: img.uri }),
             );
           }}
-        >
-          <Image
-            source={backImageSource ?? undefined}
-            style={{
-              height: 100,
-              width: "100%",
-              borderRadius: 10,
-              objectFit: "cover",
-              borderWidth: 0.4,
-              borderColor: COLOR.secondaryBackground,
-            }}
-            containerStyle={{
-              height: 100,
-              width: "90%",
-            }}
-          />
-          <View
-            style={{
-              position: "absolute",
-              width: "90%",
-              height: "100%",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Text
-              style={{
-                color: COLOR.white,
-                fontWeight: "600",
-                textShadowColor: COLOR.dark,
-                textShadowOffset: { width: 1, height: 1 },
-                textShadowRadius: 1,
-              }}
-            >
-              Ảnh mặt sau
-            </Text>
-            <Image
-              source={IMAGE.camera}
-              style={{ width: 30, height: 30 }}
-            />
-          </View>
-        </TouchableOpacity>
+        />
       </View>
-      <Input
-        inputContainerStyle={{
-          borderRadius: 10,
-          backgroundColor: "white",
-          borderWidth: 0.5,
-          paddingHorizontal: 10,
-          borderColor: COLOR.secondaryBackground,
-        }}
-        placeholder="Họ và tên"
-        // errorMessage={getError("password")}
-        onChangeText={(v) => {
-          // clearError();
-          dispatch(patchRegisterCccd({ fullName: v }));
-        }}
-        // leftIcon={{
-        //   name: "lock",
-        //   type: "font-awesome",
-        //   // color: COLOR.primary,
-        // }}
-        // leftIcon={
-        //   <Image
-        //     source={IMAGE.user}
-        //     style={{
-        //       width: 25,
-        //       height: 25,
-        //       objectFit: "cover",
-        //     }}
-        //   />
-        // }
-        leftIconContainerStyle={{
-          marginRight: 10,
-        }}
-      />
-      <Input
-        inputContainerStyle={{
-          borderRadius: 10,
-          backgroundColor: "white",
-          borderWidth: 0.5,
-          paddingHorizontal: 10,
-          borderColor: COLOR.secondaryBackground,
-        }}
-        placeholder="Ngày sinh"
-        // errorMessage={getError("password")}
-        onChangeText={(v) => {
-          // clearError();
-          dispatch(patchRegisterCccd({ birthday: v }));
-        }}
-        // leftIcon={{
-        //   name: "lock",
-        //   type: "font-awesome",
-        //   // color: COLOR.primary,
-        // }}
-        leftIconContainerStyle={{
-          marginRight: 10,
-        }}
-      />
-      <Input
-        inputContainerStyle={{
-          borderRadius: 10,
-          backgroundColor: "white",
-          borderWidth: 0.5,
-          paddingHorizontal: 10,
-          borderColor: COLOR.secondaryBackground,
-        }}
-        placeholder="Số bằng lái"
-        // errorMessage={getError("password")}
-        onChangeText={(v) => {
-          // clearError();
-          dispatch(patchRegisterCccd({ number: v }));
-        }}
-        // leftIcon={{
-        //   name: "lock",
-        //   type: "font-awesome",
-        //   // color: COLOR.primary,
-        // }}
-        leftIconContainerStyle={{
-          marginRight: 10,
-        }}
-      />
-      <Input
-        inputContainerStyle={{
-          borderRadius: 10,
-          backgroundColor: "white",
-          borderWidth: 0.5,
-          paddingHorizontal: 10,
-          borderColor: COLOR.secondaryBackground,
-        }}
-        placeholder="Nơi cấp"
-        // errorMessage={getError("password")}
-        onChangeText={(v) => {
-          // clearError();
-          dispatch(patchRegisterCccd({ address: v }));
-        }}
-        // leftIcon={{
-        //   name: "lock",
-        //   type: "font-awesome",
-        //   // color: COLOR.primary,
-        // }}
-        leftIconContainerStyle={{
-          marginRight: 10,
-        }}
-      />
-      <Input
-        inputContainerStyle={{
-          borderRadius: 10,
-          backgroundColor: "white",
-          borderWidth: 0.5,
-          paddingHorizontal: 10,
-          borderColor: COLOR.secondaryBackground,
-        }}
-        placeholder="Ngày cấp"
-        // errorMessage={getError("password")}
-        onChangeText={(v) => {
-          // clearError();
-          dispatch(patchRegisterCccd({ issueDate: v }));
-        }}
-        // leftIcon={{
-        //   name: "lock",
-        //   type: "font-awesome",
-        //   // color: COLOR.primary,
-        // }}
-        leftIconContainerStyle={{
-          marginRight: 10,
-        }}
-      />
-      <Input
-        inputContainerStyle={{
-          borderRadius: 10,
-          backgroundColor: "white",
-          borderWidth: 0.5,
-          paddingHorizontal: 10,
-          borderColor: COLOR.secondaryBackground,
-        }}
-        placeholder="Ngày hết hạn"
-        // errorMessage={getError("password")}
-        onChangeText={(v) => {
-          // clearError();
-          dispatch(patchRegisterCccd({ expireDate: v }));
-        }}
-        // leftIcon={{
-        //   name: "lock",
-        //   type: "font-awesome",
-        //   // color: COLOR.primary,
-        // }}
-        leftIconContainerStyle={{
-          marginRight: 10,
-        }}
-      />
+      <View style={{ marginTop: 10 }}>
+        <CustomInput
+          leftIcon={<Icon name="user" />}
+          placeholder="Họ và tên"
+          onChangeText={handleChange("fullName")}
+        />
+        <CustomDateInput
+          leftIcon={<Icon name="birthday" />}
+          placeholder="Ngày sinh"
+          onChangeDate={handleChange("birthday")}
+        />
+        <CustomInput
+          leftIcon={<Icon name="idCard" />}
+          placeholder="Số CCCD/CMND"
+          onChangeText={handleChange("number")}
+        />
+        <CustomInput
+          leftIcon={<Icon name="location" />}
+          placeholder="Nơi cấp"
+          onChangeText={handleChange("address")}
+        />
+        <CustomDateInput
+          leftIcon={<Icon name="calendar" />}
+          placeholder="Ngày cấp"
+          onChangeDate={handleChange("issueDate")}
+        />
+        <CustomDateInput
+          leftIcon={<Icon name="expired" />}
+          placeholder="Ngày hết hạn"
+          onChangeDate={handleChange("expireDate")}
+        />
+      </View>
       <Button
         titleStyle={{
           fontWeight: "bold",

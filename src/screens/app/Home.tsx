@@ -1,5 +1,5 @@
 import { Button, Switch, Text } from "@rneui/themed";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { bookingApi, driverApi } from "../../api";
@@ -12,6 +12,8 @@ import useLocation from "../../hook/useLocation";
 import { emit, subcribe } from "../../socket";
 import type { AppNavigationProp } from "../../types/navigation";
 import { showNativeAlert } from "../../utils/alert";
+import { COLOR } from "../../constants";
+import Icon from "../../components/common/Icon";
 interface HomeProps {
   navigation: AppNavigationProp;
 }
@@ -20,6 +22,7 @@ const Home: FC<HomeProps> = ({ navigation }) => {
   const [checked, setChecked] = useState(false);
   const { location, startLocation, stopLocation, setLocation } =
     useLocation("home");
+  const mapRef = useRef<MapView>(null);
   const handleToggleReceiveBooking = () => {
     setChecked((prev) => !prev);
   };
@@ -37,17 +40,28 @@ const Home: FC<HomeProps> = ({ navigation }) => {
   }, [location]);
   useEffect(() => {
     driverApi.updateStatus(checked ? "AVAILABLE" : "BUSY");
-    if (!checked) startLocation();
-    else stopLocation();
+    if (!checked) return;
+    startLocation();
+    return () => {
+      stopLocation();
+    };
   }, [checked, startLocation, stopLocation]);
   useEffect(() => {
     if (!location) return;
-    stopLocation()
-    return subcribe(
-      "booking/suggest",
-      () => navigation.push("BookingReceive", { currentLocation: location }),
-    );
+    return subcribe("booking/suggest", () => {
+      stopLocation();
+      navigation.push("BookingReceive", { currentLocation: location });
+    });
   }, [location, navigation, stopLocation]);
+  useEffect(() => {
+    if (!location) return;
+    mapRef.current?.animateCamera({
+      center: {
+        latitude: location.latitude,
+        longitude: location.longitude,
+      },
+    });
+  }, [location]);
   return (
     <AppWrapper>
       <View style={styles.container}>
@@ -73,7 +87,13 @@ const Home: FC<HomeProps> = ({ navigation }) => {
               <Text style={{ fontWeight: "bold", fontSize: 22 }}>
                 Tài xế đang {checked ? "rảnh" : "bận"}
               </Text>
-              <Text style={{ fontWeight: "500", fontSize: 20 }}>
+              <Text
+                style={{
+                  fontWeight: "500",
+                  fontSize: 20,
+                  color: checked ? COLOR.success : COLOR.error,
+                }}
+              >
                 {checked ? "Sẵn sàng" : "Không"} nhận đặt tài xế
               </Text>
             </View>
@@ -89,10 +109,8 @@ const Home: FC<HomeProps> = ({ navigation }) => {
           </View>
         </Card>
         <Card style={{ marginTop: 15 }}>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Text>{checked ? "Tắt" : "Bật"} chia sẻ vị trí</Text>
-          </View>
           <MapView
+            ref={mapRef}
             style={{ height: 200 }}
             camera={{
               center: {
@@ -102,11 +120,14 @@ const Home: FC<HomeProps> = ({ navigation }) => {
               pitch: 0,
               heading: 0,
               altitude: 0,
-              zoom: 15,
+              zoom: 13,
             }}
           >
             <Marker
-              draggable={!checked}
+              draggable
+              onDragStart={() => {
+                stopLocation();
+              }}
               onDragEnd={(e) => {
                 setLocation({
                   latitude: e.nativeEvent.coordinate.latitude,
@@ -119,7 +140,13 @@ const Home: FC<HomeProps> = ({ navigation }) => {
               }}
               title="Vị trí của bạn"
               description="Đây là vị trí hiện tại của bạn"
-            />
+            >
+              <Icon
+                type="image"
+                name="driverPin"
+                size={30}
+              />
+            </Marker>
           </MapView>
         </Card>
       </View>

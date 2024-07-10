@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-import { Button, Input } from "@rneui/themed";
+import { Button } from "@rneui/themed";
 import React, { PropsWithChildren, useEffect, useRef, useState } from "react";
 import {
   StyleSheet,
@@ -10,6 +10,8 @@ import {
 } from "react-native";
 import useLogin from "../../api/hook/useLogin";
 import AuthWrapper from "../../components/AuthWrapper";
+import CustomInput from "../../components/common/CustomInput";
+import Icon from "../../components/common/Icon";
 import { COLOR } from "../../constants/color";
 import { useInitAppContext } from "../../hook/useInitApp";
 import type { AuthNavigationProp } from "../../types/navigation";
@@ -45,64 +47,50 @@ const Login = () => {
             fontWeight: "bold",
             fontSize: 30,
             textAlign: "center",
-            paddingVertical: 20,
+            paddingBottom: 20,
           }}
         >
           Đăng nhập tài khoản
         </Text>
-        <Input
+        <CustomInput
           ref={phoneRef}
+          leftIcon={
+            <Icon
+              size={28}
+              name="userPhone"
+            />
+          }
+          width="95%"
+          keyboardType="phone-pad"
+          placeholder="Số điện thoại"
+          errorText={getError("phone")}
           onChangeText={(v) => {
             clearError();
             setPhone(v);
           }}
-          placeholder="Số điện thoại"
-          keyboardType="phone-pad"
-          leftIcon={{
-            name: "phone",
-            type: "font-awesome",
-            // color: COLOR.primary,
-          }}
-          errorMessage={getError("phone")}
-          leftIconContainerStyle={{
-            marginRight: 10,
-          }}
-          inputContainerStyle={{
-            borderRadius: 10,
-            backgroundColor: "white",
-            borderWidth: 0.5,
-            paddingHorizontal: 10,
-            borderColor: COLOR.secondaryBackground,
-          }}
         />
-        <Input
-          inputContainerStyle={{
-            borderRadius: 10,
-            backgroundColor: "white",
-            borderWidth: 0.5,
-            paddingHorizontal: 10,
-            borderColor: COLOR.secondaryBackground,
-          }}
+        <CustomInput
+          leftIcon={
+            <Icon
+              size={28}
+              name="lock"
+            />
+          }
+          rightIcon={
+            <TouchableOpacity onPress={() => setShowPass((v) => !v)}>
+              <Icon
+                size={28}
+                name={showPass ? "hidden" : "view"}
+              />
+            </TouchableOpacity>
+          }
+          width="95%"
           placeholder="Mật khẩu"
-          errorMessage={getError("password")}
+          secureTextEntry={!showPass}
+          errorText={getError("password")}
           onChangeText={(v) => {
             clearError();
             setPassword(v);
-          }}
-          secureTextEntry={!showPass}
-          leftIcon={{
-            name: "lock",
-            type: "font-awesome",
-            // color: COLOR.primary,
-          }}
-          leftIconContainerStyle={{
-            marginRight: 10,
-          }}
-          rightIcon={{
-            name: showPass ? "eye" : "eye-slash",
-            type: "font-awesome",
-            // color: COLOR.primary,
-            onPress: () => setShowPass(!showPass),
           }}
         />
         <Button

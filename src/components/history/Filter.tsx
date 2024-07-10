@@ -53,6 +53,7 @@ const Filter = ({ time, status, onChange }: FilterProps) => {
         <View style={{ overflow: "scroll" }}>
           <DateTimePicker
             value={time}
+            locale={"vi"}
             mode="date"
             onValueChange={(value) => {
               if (value) onChange?.(dayjs(value), status);

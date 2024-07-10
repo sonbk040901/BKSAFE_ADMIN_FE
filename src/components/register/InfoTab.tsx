@@ -1,164 +1,151 @@
-import { Button, Input } from "@rneui/themed";
-import React, { type FC } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { Button } from "@rneui/themed";
+import React, { useRef, type FC } from "react";
+import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import { COLOR } from "../../constants";
 import { useAppDispatch, useAppSelector } from "../../states";
-import { patchRegister, selectRegister } from "../../states/slice/register";
-import { useNavigation } from "@react-navigation/native";
+import {
+  RegisterState,
+  patchRegister,
+  selectRegister,
+} from "../../states/slice/register";
 import { AuthNavigationProp } from "../../types/navigation";
+import CustomDateInput from "../common/CustomDateInput";
+import CustomInput from "../common/CustomInput";
+import Icon from "../common/Icon";
+import Title from "./Title";
 
 interface InfoTabProps {}
 
 const InfoTab: FC<InfoTabProps> = () => {
   const navigation = useNavigation<AuthNavigationProp>();
   const { showPassword } = useAppSelector(selectRegister);
+  const phoneRef = useRef<TextInput>(null);
   const dispatch = useAppDispatch();
+  const handleChange =
+    <T extends keyof RegisterState>(key: T) =>
+    (value: RegisterState[T]) => {
+      dispatch(patchRegister({ [key]: value }));
+    };
   return (
-    <View style={{ width: "100%", alignItems: "center" }}>
+    <View
+      style={{
+        paddingHorizontal: 10,
+      }}
+    >
       <Text
         style={{
-          fontWeight: "500",
-          color: COLOR.secondary,
-          marginBottom: 10,
-          width: "100%",
-          paddingHorizontal: 10,
+          fontWeight: "bold",
+          fontSize: 30,
+          textAlign: "center",
+          paddingBottom: 20,
         }}
       >
-        Thông tin cá nhân
+        Đăng ký tài khoản
       </Text>
-      <Input
-        onChangeText={(v) => {
-          // clearError();
-          dispatch(patchRegister({ phone: v }));
-        }}
-        placeholder="Số điện thoại"
+      <Title title="Thông tin cá nhân" />
+      <CustomInput
+        ref={phoneRef}
+        leftIcon={
+          <Icon
+            size={28}
+            name="userPhone"
+          />
+        }
         keyboardType="phone-pad"
-        leftIcon={{
-          name: "phone",
-          type: "font-awesome",
-          // color: COLOR.primary,
-        }}
-        // errorMessage={getError("phone")}
-        leftIconContainerStyle={{
-          marginRight: 10,
-        }}
-        inputContainerStyle={{
-          borderRadius: 10,
-          backgroundColor: "white",
-          borderWidth: 0.5,
-          paddingHorizontal: 10,
-          borderColor: COLOR.secondaryBackground,
-        }}
-      />
-      <Input
-        inputContainerStyle={{
-          borderRadius: 10,
-          backgroundColor: "white",
-          borderWidth: 0.5,
-          paddingHorizontal: 10,
-          borderColor: COLOR.secondaryBackground,
-        }}
-        placeholder="Mật khẩu"
-        // errorMessage={getError("password")}
+        placeholder="Số điện thoại"
+        // errorText={getError("phone")}
         onChangeText={(v) => {
           // clearError();
-          dispatch(patchRegister({ password: v }));
-        }}
-        secureTextEntry={!showPassword}
-        leftIcon={{
-          name: "lock",
-          type: "font-awesome",
-          // color: COLOR.primary,
-        }}
-        leftIconContainerStyle={{
-          marginRight: 10,
-        }}
-        rightIcon={{
-          name: showPassword ? "eye" : "eye-slash",
-          type: "font-awesome",
-          // color: COLOR.primary,
-          onPress: () =>
-            dispatch(patchRegister({ showPassword: !showPassword })),
+          handleChange("phone")(v);
         }}
       />
-      <Input
-        inputContainerStyle={{
-          borderRadius: 10,
-          backgroundColor: "white",
-          borderWidth: 0.5,
-          paddingHorizontal: 10,
-          borderColor: COLOR.secondaryBackground,
-        }}
-        placeholder="Mật khẩu xác nhận"
-        // errorMessage={getError("confirm")}
-        onChangeText={(v) => {
-          // clearError();
-          dispatch(patchRegister({ confirmPassword: v }));
-        }}
-        secureTextEntry={!showPassword}
-        leftIcon={{
-          name: "lock",
-          type: "font-awesome",
-          // color: COLOR.primary,
-        }}
-        leftIconContainerStyle={{
-          marginRight: 10,
-        }}
-        rightIcon={{
-          name: showPassword ? "eye" : "eye-slash",
-          type: "font-awesome",
-          // color: COLOR.primary,
-          onPress: () =>
-            dispatch(patchRegister({ showPassword: !showPassword })),
-        }}
-      />
-      <Input
-        onChangeText={(v) => {
-          // clearError();
-          dispatch(patchRegister({ fullName: v }));
-        }}
-        placeholder="Họ và tên"
-        leftIcon={{
-          name: "user",
-          type: "ant-design",
-          // color: COLOR.primary,
-        }}
-        // errorMessage={getError("name")}
-        leftIconContainerStyle={{
-          marginRight: 10,
-        }}
-        inputContainerStyle={{
-          borderRadius: 10,
-          backgroundColor: "white",
-          borderWidth: 0.5,
-          paddingHorizontal: 10,
-          borderColor: COLOR.secondaryBackground,
-        }}
-      />
-      <Input
-        onChangeText={(v) => {
-          // clearError();
-          dispatch(patchRegister({ email: v }));
-        }}
-        placeholder="Email"
+      <CustomInput
+        leftIcon={
+          <Icon
+            size={28}
+            name="email"
+          />
+        }
         keyboardType="email-address"
-        leftIcon={{
-          name: "mail",
-          type: "entypo",
-          // color: COLOR.primary,
-        }}
-        // errorMessage={getError("email")}
-        leftIconContainerStyle={{
-          marginRight: 10,
-        }}
-        inputContainerStyle={{
-          borderRadius: 10,
-          backgroundColor: "white",
-          borderWidth: 0.5,
-          paddingHorizontal: 10,
-          borderColor: COLOR.secondaryBackground,
+        placeholder="Email"
+        // errorText={getError("email")}
+        onChangeText={(v) => {
+          // clearError();
+          handleChange("email")(v);
         }}
       />
+      <CustomInput
+        leftIcon={
+          <Icon
+            size={28}
+            name="user"
+          />
+        }
+        placeholder="Họ và tên"
+        // errorText={getError("name")}
+        onChangeText={(v) => {
+          // clearError();
+          handleChange("fullName")(v);
+        }}
+      />
+
+      <CustomDateInput
+        leftIcon={<Icon name="birthday" />}
+        placeholder="Ngày sinh"
+        onChangeDate={handleChange("birthday")}
+      />
+      <CustomInput
+        leftIcon={
+          <Icon
+            size={28}
+            name="lock"
+          />
+        }
+        rightIcon={
+          <TouchableOpacity
+            onPress={() => handleChange("showPassword")(!showPassword)}
+          >
+            <Icon
+              size={28}
+              name={showPassword ? "hidden" : "view"}
+            />
+          </TouchableOpacity>
+        }
+        placeholder="Mật khẩu"
+        secureTextEntry={!showPassword}
+        // errorText={getError("password")}
+        onChangeText={(v) => {
+          // clearError();
+          handleChange("password")(v);
+        }}
+      />
+      <CustomInput
+        leftIcon={
+          <Icon
+            size={28}
+            name="lock"
+          />
+        }
+        rightIcon={
+          <TouchableOpacity
+            onPress={() => handleChange("showPassword")(!showPassword)}
+          >
+            <Icon
+              size={28}
+              name={showPassword ? "hidden" : "view"}
+            />
+          </TouchableOpacity>
+        }
+        placeholder="Mật khẩu xác nhận"
+        secureTextEntry={!showPassword}
+        // errorText={getError("confirm")}
+        onChangeText={(v) => {
+          // clearError();
+          handleChange("confirmPassword")(v);
+        }}
+      />
+
       <Button
         titleStyle={{
           fontWeight: "bold",

@@ -11,7 +11,7 @@ export interface SignupDTO {
   fullName: string;
   phone: string;
   address?: string;
-  birthday?: Date;
+  birthday?: string;
   cccd: Omit<Cccd, "id">;
   license: Omit<License, "id">;
 }

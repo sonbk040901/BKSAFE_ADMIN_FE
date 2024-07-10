@@ -12,3 +12,19 @@ export const IMAGE = {
   camera: require("../assets/images/camera.png"),
   user: require("../assets/images/user.png"),
 } as const;
+
+export const ICON = {
+  user: require("../assets/icons/user.png"),
+  idCard: require("../assets/icons/id-card.png"),
+  location: require("../assets/icons/location.png"),
+  calendar: require("../assets/icons/calendar.png"),
+  expired: require("../assets/icons/expired.png"),
+  birthday: require("../assets/icons/birthday.png"),
+  driversLicense: require("../assets/icons/drivers-license.png"),
+  truck: require("../assets/icons/truck.png"),
+  lock: require("../assets/icons/lock.png"),
+  view: require("../assets/icons/view.png"),
+  hidden: require("../assets/icons/hidden.png"),
+  userPhone: require("../assets/icons/user-phone.png"),
+  email: require("../assets/icons/email.png"),
+} as const;

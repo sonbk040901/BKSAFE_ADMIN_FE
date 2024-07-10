@@ -1,21 +1,29 @@
+import { Image } from "@rneui/themed";
 import { StatusBar } from "expo-status-bar";
 import React, { FC, PropsWithChildren } from "react";
-import { StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
+import { IMAGE } from "../constants/image";
 
 interface AuthWrapperProps extends PropsWithChildren {}
 
 const AuthWrapper: FC<AuthWrapperProps> = ({ children }) => {
   return (
     <View style={styles.container}>
-      <StatusBar />
-      <View
-        style={{
-          justifyContent: "center",
-          height: "100%",
-        }}
-      >
+      <ScrollView style={{ width: "100%" }}>
+        <StatusBar />
+        <View style={{ width: "100%", alignItems: "center" }}>
+          <Image
+            source={IMAGE.cropLogo}
+            style={{
+              width: 200,
+              height: 140,
+              objectFit: "contain",
+              backgroundColor: "transparent",
+            }}
+          />
+        </View>
         {children}
-      </View>
+      </ScrollView>
     </View>
   );
 };

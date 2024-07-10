@@ -20,6 +20,8 @@ import Notification from "./src/screens/Notification";
 import Splash from "./src/screens/Splash";
 import { store } from "./src/states";
 import { RootNavigationParamList } from "./src/types/navigation";
+import { DatePickerProvider } from "./src/components/common/DatePickerContext";
+import DatePickerModal from "./src/components/common/DatePickerModal";
 
 const Stack = createStackNavigator<RootNavigationParamList>();
 const queryClient = new QueryClient();
@@ -32,101 +34,110 @@ export default function Root() {
           <InitAppProvider>
             <Provider store={store}>
               <StatusBar style="light" />
-              <Stack.Navigator
-                screenOptions={{ headerShown: false, animationEnabled: true }}
-              >
-                <Stack.Screen
-                  name="Splash"
-                  component={Splash}
-                />
-                <Stack.Screen
-                  name="App"
-                  component={AppNavigator}
-                />
-                <Stack.Screen
-                  name="Auth"
-                  component={AuthNavigator}
-                />
-                <Stack.Screen
-                  name="BookingReceive"
-                  component={BookingReceive}
-                />
-                <Stack.Screen
-                  name="CurrentBooking"
-                  component={CurrentBooking}
-                />
+              <DatePickerProvider>
+                <Stack.Navigator
+                  screenOptions={{ headerShown: false, animationEnabled: true }}
+                >
+                  <Stack.Screen
+                    name="Splash"
+                    component={Splash}
+                  />
+                  <Stack.Screen
+                    name="App"
+                    component={AppNavigator}
+                  />
+                  <Stack.Screen
+                    name="Auth"
+                    component={AuthNavigator}
+                  />
+                  <Stack.Screen
+                    name="BookingReceive"
+                    component={BookingReceive}
+                  />
+                  <Stack.Screen
+                    name="CurrentBooking"
+                    component={CurrentBooking}
+                  />
 
-                <Stack.Screen
-                  name="Chat"
-                  component={Chat}
-                  options={{
-                    transitionSpec: {
-                      open: { animation: "timing", config: { duration: 300 } },
-                      close: {
-                        animation: "timing",
-                        config: { duration: 300 },
-                      },
-                    },
-                    cardStyleInterpolator: ({ current, layouts }) => {
-                      return {
-                        cardStyle: {
-                          transform: [
-                            {
-                              translateX: current.progress.interpolate({
-                                inputRange: [0, 1],
-                                outputRange: [layouts.screen.width, 0],
-                              }),
-                            },
-                          ],
-                          opacity: current.progress,
+                  <Stack.Screen
+                    name="Chat"
+                    component={Chat}
+                    options={{
+                      transitionSpec: {
+                        open: {
+                          animation: "timing",
+                          config: { duration: 300 },
                         },
-                      };
-                    },
-                    gestureEnabled: true,
-                    // headerShown: false,
-                    // cardStyle: { backgroundColor: "transparent" },
-                  }}
-                />
-                <Stack.Screen
-                  name="DetailChat"
-                  component={DetailChat}
-                />
-                <Stack.Screen
-                  name="Notification"
-                  component={Notification}
-                  options={{
-                    transitionSpec: {
-                      open: { animation: "timing", config: { duration: 300 } },
-                      close: {
-                        animation: "timing",
-                        config: { duration: 300 },
-                      },
-                    },
-                    cardStyleInterpolator: ({ current, layouts }) => {
-                      return {
-                        cardStyle: {
-                          transform: [
-                            {
-                              translateX: current.progress.interpolate({
-                                inputRange: [0, 1],
-                                outputRange: [layouts.screen.width, 0],
-                              }),
-                            },
-                          ],
-                          opacity: current.progress,
+                        close: {
+                          animation: "timing",
+                          config: { duration: 300 },
                         },
-                      };
-                    },
-                    gestureEnabled: true,
-                    // headerShown: false,
-                    // cardStyle: { backgroundColor: "transparent" },
-                  }}
-                />
-                <Stack.Screen
-                  name="HistoryDetail"
-                  component={HistoryDetail}
-                />
-              </Stack.Navigator>
+                      },
+                      cardStyleInterpolator: ({ current, layouts }) => {
+                        return {
+                          cardStyle: {
+                            transform: [
+                              {
+                                translateX: current.progress.interpolate({
+                                  inputRange: [0, 1],
+                                  outputRange: [layouts.screen.width, 0],
+                                }),
+                              },
+                            ],
+                            opacity: current.progress,
+                          },
+                        };
+                      },
+                      gestureEnabled: true,
+                      // headerShown: false,
+                      // cardStyle: { backgroundColor: "transparent" },
+                    }}
+                  />
+                  <Stack.Screen
+                    name="DetailChat"
+                    component={DetailChat}
+                  />
+                  <Stack.Screen
+                    name="Notification"
+                    component={Notification}
+                    options={{
+                      transitionSpec: {
+                        open: {
+                          animation: "timing",
+                          config: { duration: 300 },
+                        },
+                        close: {
+                          animation: "timing",
+                          config: { duration: 300 },
+                        },
+                      },
+                      cardStyleInterpolator: ({ current, layouts }) => {
+                        return {
+                          cardStyle: {
+                            transform: [
+                              {
+                                translateX: current.progress.interpolate({
+                                  inputRange: [0, 1],
+                                  outputRange: [layouts.screen.width, 0],
+                                }),
+                              },
+                            ],
+                            opacity: current.progress,
+                          },
+                        };
+                      },
+                      gestureEnabled: true,
+                      // headerShown: false,
+                      // cardStyle: { backgroundColor: "transparent" },
+                    }}
+                  />
+                  <Stack.Screen
+                    name="HistoryDetail"
+                    component={HistoryDetail}
+                  />
+                </Stack.Navigator>
+                <DatePickerModal />
+              </DatePickerProvider>
             </Provider>
           </InitAppProvider>
         </NavigationContainer>

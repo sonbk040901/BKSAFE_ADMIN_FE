@@ -3,7 +3,7 @@ import { ImagePickerAsset } from "expo-image-picker";
 import { SignupDTO } from "../../api/auth";
 import type { RootState } from "../store";
 
-interface RegisterState extends SignupDTO {
+export interface RegisterState extends SignupDTO {
   status: "idle" | "loading" | "success" | "error";
   error: string | null;
   confirmPassword: string;
