@@ -39,6 +39,8 @@ const UserInfo = ({ userProps }: { userProps?: UserProps }) => {
             size={50}
             rounded
             source={{ uri: userProps.avatar ?? undefined }}
+            title={userProps.avatar ? undefined : userProps.fullName[0]}
+            containerStyle={{ backgroundColor: COLOR.secondaryBackground }}
           />
           <View style={{ justifyContent: "center", flex: 1 }}>
             <View
